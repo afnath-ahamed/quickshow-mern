@@ -1,5 +1,10 @@
-import Home from '../pages/Home'
+import AppProviders from './AppProviders'
+import AppRoutes from './AppRoutes'
 
 export default function App() {
-  return <Home />
+  return (
+    <AppProviders>
+      <AppRoutes />
+    </AppProviders>
+  )
 }

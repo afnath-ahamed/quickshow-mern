@@ -13,10 +13,13 @@ client/src/
 ├── vite-env.d.ts  # Vite client types
 ├── app/           # App shell and global styles
 │   ├── App.tsx
+│   ├── AppProviders.tsx
+│   ├── AppRoutes.tsx
+│   ├── layouts/
 │   └── index.css
-└── pages/         # Screens, starting with Home.tsx
-    ├── Home.tsx
-    └── admin/     # Admin screens
+├── pages/         # Customer and admin screens
+├── features/      # Auth, movies, seat booking, and admin code
+└── shared/        # HTTP client, assets, formatting, and reusable UI
 
 server/src/
 ├── config/        # MongoDB connection
@@ -30,7 +33,7 @@ server/src/
 └── index.js       # Connects to MongoDB and starts the server
 ```
 
-Add frontend feature code under `features/` and reusable code under `shared/` as the app grows. Reserved folders contain `.gitkeep` so their layout is visible in Git. Remove each placeholder when adding the first real file to that folder.
+The homepage and health endpoint are working. The rest of the tree contains starter files for feature branches. UI pages have basic headings, and the server tests are marked TODO until their features are implemented.
 
 ## Run locally
 
