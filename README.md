@@ -2,20 +2,21 @@
 
 A full-stack movie ticket booking project based on [GreatStack’s QuickShow tutorial](https://www.youtube.com/watch?v=Pez37wmUaQM). The starter includes a React client and an Express API connected to MongoDB.
 
-- `client/` contains the React app, built with Vite and Tailwind CSS.
+- `client/` contains the React app, built with TypeScript, Vite, and Tailwind CSS v4.
 - `server/` contains the Express API and Mongoose connection.
 
 ## Project structure
 
 ```text
 client/src/
-├── api/           # Client calls to the Express API
-├── assets/        # Images and other bundled assets
-├── components/    # Shared React components
-├── pages/         # Customer pages, starting with Home.jsx
-│   └── admin/     # Admin pages
-├── App.jsx        # Root React component
-└── main.jsx       # React entry point
+├── main.tsx       # React entry point
+├── vite-env.d.ts  # Vite client types
+├── app/           # App shell and global styles
+│   ├── App.tsx
+│   └── index.css
+└── pages/         # Screens, starting with Home.tsx
+    ├── Home.tsx
+    └── admin/     # Admin screens
 
 server/src/
 ├── config/        # MongoDB connection
@@ -29,7 +30,7 @@ server/src/
 └── index.js       # Connects to MongoDB and starts the server
 ```
 
-Future feature folders contain `.gitkeep` so their layout is visible in Git. Remove each placeholder when adding the first real file to that folder.
+Add frontend feature code under `features/` and reusable code under `shared/` as the app grows. Reserved folders contain `.gitkeep` so their layout is visible in Git. Remove each placeholder when adding the first real file to that folder.
 
 ## Run locally
 
@@ -64,9 +65,10 @@ With the API running, run the health check in PowerShell. The response should sh
 Invoke-RestMethod http://localhost:5000/api/health
 ```
 
-From `client/`, run the lint and production build checks.
+From `client/`, run the lint, type, and production build checks.
 
 ```powershell
 npm.cmd run lint
+npm.cmd run typecheck
 npm.cmd run build
 ```
