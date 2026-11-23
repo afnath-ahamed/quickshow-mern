@@ -7,6 +7,10 @@ QuickShow is a movie ticket booking app in development. The current setup runs a
 - **The setup works locally.** Vite serves the QuickShow homepage, and the Express server connects to MongoDB through Mongoose and serves `GET /api/health`. GitHub Actions installs both apps, lints and builds the client, and runs the server test command.
 - **Later branches will implement the scaffolded features.** These include Clerk sign-in and admin access, the movie catalog and favorites, show scheduling, seat booking, Stripe Checkout, and Inngest jobs for seat expiry and email. The three server feature tests are marked TODO. The Vercel configuration files are in place for the deployment step.
 
+## Development plan
+
+The roadmap covers all eight branches, what to build on each, and the criteria for merging. [QuickShow development plan (PDF)](docs/quickshow-mern-development-plan.pdf)
+
 ## Architecture
 
 QuickShow uses a **client–server architecture**. The React client renders the storefront and admin screens. The Express REST API owns access checks, booking rules, and persistence in MongoDB.
