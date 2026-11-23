@@ -5,6 +5,32 @@ A full-stack movie ticket booking project based on [GreatStack’s QuickShow tut
 - `client/` contains the React app, built with Vite and Tailwind CSS.
 - `server/` contains the Express API and Mongoose connection.
 
+## Project structure
+
+```text
+client/src/
+├── api/           # Client calls to the Express API
+├── assets/        # Images and other bundled assets
+├── components/    # Shared React components
+├── pages/         # Customer pages, starting with Home.jsx
+│   └── admin/     # Admin pages
+├── App.jsx        # Root React component
+└── main.jsx       # React entry point
+
+server/src/
+├── config/        # MongoDB connection
+├── controllers/   # Request handlers for app features
+├── jobs/          # Inngest jobs
+├── middleware/    # Authentication and authorization
+├── models/        # Mongoose schemas and models
+├── routes/        # Express routers, starting with the health endpoint
+├── services/      # Integrations such as TMDB and Stripe
+├── app.js         # Configures Express and mounts routes
+└── index.js       # Connects to MongoDB and starts the server
+```
+
+Future feature folders contain `.gitkeep` so their layout is visible in Git. Remove each placeholder when adding the first real file to that folder.
+
 ## Run locally
 
 Use Node.js 24 LTS or newer, npm, and a running local MongoDB instance or MongoDB Atlas database.

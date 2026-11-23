@@ -1,7 +1,5 @@
+import Home from './pages/Home.jsx'
+
 export default function App() {
-  return (
-    <main className="mx-auto max-w-5xl px-6 py-12">
-      <h1 className="text-3xl font-bold">QuickShow</h1>
-    </main>
-  )
+  return <Home />
 }
