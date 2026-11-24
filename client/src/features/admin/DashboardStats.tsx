@@ -5,7 +5,8 @@ export default function DashboardStats({ data }: { data: DashboardData }) {
   const stats = [
     { label: 'Active shows', value: data.activeShows, icon: CalendarDays },
     { label: 'Total users', value: data.users ?? 'Unavailable', icon: Users },
-    { label: 'Total bookings', value: 'Pending', icon: Ticket },
+    { label: 'Active holds', value: data.bookingCounts.holds, icon: Ticket },
+    { label: 'Confirmed bookings', value: data.bookingCounts.confirmed, icon: Ticket },
     { label: 'Total revenue', value: 'Pending', icon: CircleDollarSign },
   ]
 

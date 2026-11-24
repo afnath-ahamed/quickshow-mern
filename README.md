@@ -8,7 +8,8 @@ QuickShow is a movie ticket booking app in development. The current setup runs a
 - **Clerk authentication.** The React app has sign-in and sign-up pages plus an account menu. Express verifies the Clerk session for account endpoints and checks the user's Clerk role for admin access.
 - **Movie catalog and favorites.** Browse the public storefront, view movie details and trailers, and view upcoming screenings scheduled by an admin. Signed-in users can save and remove movies in their own MongoDB-backed favorites list.
 - **Admin scheduling.** Admins can browse TMDB Now Playing, schedule priced screenings, and review their schedule. Upcoming screenings power the public catalog.
-- **Upcoming features.** Seat booking, Stripe Checkout, and Inngest jobs for Clerk user sync, seat expiry, and email. The Vercel configuration files are in place for deployment.
+- **Seat booking.** Signed-in customers can reserve up to five seats for a screening, review active and expired holds in My Bookings, and see availability before reserving. Admins can review reservations by screening.
+- **Upcoming features.** Stripe Checkout and Inngest jobs for Clerk user sync, seat expiry, and email. The Vercel configuration files are in place for deployment.
 
 ## Development plan
 
@@ -51,7 +52,7 @@ A typical feature request flows through a route and any applicable middleware to
 
 ## Run locally
 
-Use **Node.js 24 LTS or newer**, npm, and a running local MongoDB instance or a MongoDB Atlas database. Run the following PowerShell commands in two terminals, each starting at the repository root.
+Use **Node.js 24 LTS or newer**, npm, and a MongoDB replica set or MongoDB Atlas database. Seat reservations use MongoDB transactions. Run the following PowerShell commands in two terminals, each starting at the repository root.
 
 Create a **Clerk development instance** and copy its keys into the local `.env` files. Use the same publishable key on both sides. The server secret belongs in `server/.env`. [Clerk React setup](https://clerk.com/docs/react/getting-started/quickstart)
 
@@ -99,7 +100,7 @@ npm.cmd run typecheck
 npm.cmd run build
 ```
 
-From `server/`, run the Node.js test runner. The auth and catalog tests exercise access checks, movie details, future showtimes, and favorite ownership using controlled Clerk and storage responses. The seat reservation and Stripe webhook tests are still TODOs.
+From `server/`, run the Node.js test runner. The auth and catalog tests exercise access checks, movie details, future showtimes, and favorite ownership using controlled Clerk and storage responses. The reservation tests start an isolated MongoDB replica set and may download the MongoDB test binary on first run. The Stripe webhook test is still a TODO.
 
 ```powershell
 npm.cmd test
@@ -118,7 +119,7 @@ The [CI workflow](.github/workflows/ci.yml) runs on pull requests and pushes to 
 ### Verify the movie catalog locally
 
 1. Schedule a screening through the admin area, then open the homepage, select a trailer, and use **Explore movies** to browse the catalog.
-2. Open a scheduled movie, check its cast, and use **Buy tickets** to jump to its schedule. Select a date and time to see the price. Seat booking arrives in a later step.
+2. Open a scheduled movie, check its cast, and use **Buy tickets** to jump to its schedule. Select a date and time, choose seats, and reserve them.
 3. Sign in, add that movie to Favorites, reload the Favorites page, then remove it. Sign in as a second user to confirm favorites belong to each account.
 4. Open a detail URL with an unknown ID and confirm it shows **Movie not found**.
 
@@ -134,4 +135,14 @@ Add the [TMDB API read access token](https://developer.themoviedb.org/docs/getti
 4. Submit the same slots again. Each unique movie and start time remains a single screening with its original price. A failed request can be retried.
 5. Confirm a regular account receives HTTP 403 on the admin API. Signed-out requests receive HTTP 401.
 
-The admin API provides `GET /api/admin/dashboard`, `GET /api/admin/movies/now-playing`, and `GET` and `POST /api/admin/shows`. The dashboard counts upcoming screenings and Clerk users. Live booking figures arrive with seat booking, and revenue figures arrive with checkout.
+The admin API provides `GET /api/admin/dashboard`, `GET /api/admin/movies/now-playing`, and `GET` and `POST /api/admin/shows`. The dashboard counts upcoming screenings and Clerk users. The dashboard reports active holds and confirmed bookings separately. Revenue figures arrive with checkout.
+
+### Verify seat booking locally
+
+1. Open a movie with an upcoming screening, choose its time, and select **Choose seats**. Sign in when prompted.
+2. Select one to five available seats and choose **Reserve seats**. My Bookings shows the movie, screening time, seats, total, and hold countdown.
+3. Open the same screening in a second account. Verify the reserved seats are unavailable. If a seat becomes unavailable after the map loads, submitting a conflicting selection refreshes the map.
+4. Once the hold expires, it remains in My Bookings as **Expired** and a different customer can reserve the seat. Holds last up to ten minutes and end when the screening starts if that is sooner.
+5. As an admin, open **List Bookings** or follow the booking-count link for a specific screening in **List Shows**.
+
+The seat API is `GET /api/shows/:showId/seats`. Creating a hold and viewing personal history require Clerk through `POST /api/bookings` and `GET /api/bookings/me`. `GET /api/admin/bookings` requires the admin role and optionally accepts a `showId` filter. MongoDB transactions keep all selected seats and the reservation record consistent. A unique index prevents multiple claims for the same seat and screening.

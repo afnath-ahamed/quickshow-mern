@@ -1,5 +1,5 @@
 import { UserButton } from '@clerk/react'
-import { CalendarDays, CalendarPlus, LayoutDashboard } from 'lucide-react'
+import { CalendarDays, CalendarPlus, LayoutDashboard, Ticket } from 'lucide-react'
 import { Link, NavLink, Outlet } from 'react-router'
 import logo from '../../shared/assets/logo.svg'
 
@@ -7,6 +7,7 @@ const links = [
   { to: '/admin', label: 'Dashboard', icon: LayoutDashboard },
   { to: '/admin/add-show', label: 'Add Show', icon: CalendarPlus },
   { to: '/admin/shows', label: 'List Shows', icon: CalendarDays },
+  { to: '/admin/bookings', label: 'List Bookings', icon: Ticket },
 ]
 
 export default function AdminLayout() {

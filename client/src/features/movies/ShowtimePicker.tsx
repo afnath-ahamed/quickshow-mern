@@ -1,5 +1,6 @@
 import { CalendarDays, Clock3 } from 'lucide-react'
 import { useState } from 'react'
+import { Link } from 'react-router'
 import { formatMinorCurrency } from '../../shared/lib/formatCurrency'
 import { formatShowtime } from '../../shared/lib/formatShowtime'
 import type { Showtime } from './moviesApi'
@@ -43,8 +44,13 @@ export default function ShowtimePicker({ showtimes, timeZone }: { showtimes: Sho
             ))}
           </div>
           <p className="mt-5 min-h-6 text-sm text-slate-200" role="status">
-            {selectedShow ? 'Selected ' + formatShowtime(new Date(selectedShow.startsAt), timeZone, 'en') + ' · ' + formatMinorCurrency(selectedShow.priceMinor, selectedShow.currency) + '. Seat booking is coming in a later release.' : 'Select a time to preview your screening.'}
+            {selectedShow ? 'Selected ' + formatShowtime(new Date(selectedShow.startsAt), timeZone, 'en') + ' · ' + formatMinorCurrency(selectedShow.priceMinor, selectedShow.currency) : 'Select a screening time to continue.'}
           </p>
+          {selectedShow && (
+            <Link className="catalog-button catalog-button-primary mt-3" to={'/shows/' + selectedShow.id + '/seats'}>
+              Choose seats
+            </Link>
+          )}
         </>
       ) : <p className="mt-5">No showtimes are available.</p>}
     </section>

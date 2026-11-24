@@ -9,6 +9,7 @@ export type Screening = {
   startsAt: string
   priceMinor: number
   currency: string
+  bookingCounts?: { holds: number; confirmed: number }
 }
 
 type ScheduleSettings = {
@@ -20,6 +21,7 @@ type ScheduleSettings = {
 export type DashboardData = ScheduleSettings & {
   activeShows: number
   users: number | null
+  bookingCounts: { holds: number; confirmed: number }
   upcoming: Screening[]
 }
 
