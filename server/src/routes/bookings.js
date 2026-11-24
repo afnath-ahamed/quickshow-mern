@@ -1,6 +1,10 @@
-import { Router } from 'express'
+import { json, Router } from 'express'
+import { listMyBookings, reserveSeats } from '../controllers/bookingsController.js'
 
-const router = Router()
-
-// TODO: Register the bookings handlers in its feature branch.
-export default router
+export default function createBookingsRouter(requireAuth) {
+  const router = Router()
+  router.use(requireAuth)
+  router.get('/me', listMyBookings)
+  router.post('/', json({ limit: '8kb' }), reserveSeats)
+  return router
+}

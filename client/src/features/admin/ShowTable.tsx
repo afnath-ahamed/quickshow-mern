@@ -14,6 +14,7 @@ export default function ShowTable({ shows, timeZone, empty }: { shows: Screening
             <th scope="col" className="px-4 py-3">Movie</th>
             <th scope="col" className="px-4 py-3">Screening time</th>
             <th scope="col" className="px-4 py-3">Ticket price</th>
+            <th scope="col" className="px-4 py-3">Bookings</th>
           </tr>
         </thead>
         <tbody>
@@ -24,6 +25,11 @@ export default function ShowTable({ shows, timeZone, empty }: { shows: Screening
                 <time dateTime={show.startsAt}>{formatShowtime(new Date(show.startsAt), timeZone, 'en')}</time>
               </td>
               <td className="whitespace-nowrap px-4 py-3">{formatMinorCurrency(show.priceMinor, show.currency)}</td>
+              <td className="whitespace-nowrap px-4 py-3">
+                <Link to={'/admin/bookings?showId=' + show.id} className="hover:underline">
+                  {show.bookingCounts?.holds ?? 0} held · {show.bookingCounts?.confirmed ?? 0} confirmed
+                </Link>
+              </td>
             </tr>
           ))}
         </tbody>

@@ -16,6 +16,7 @@ export function createRequireAuth({ readAuth, getUser }) {
 
     response.locals.currentUser = {
       userId,
+      displayName: [user.firstName, user.lastName].filter(Boolean).join(' ') || user.username,
       role: user.privateMetadata?.role === 'admin' ? 'admin' : 'user',
     }
     next()

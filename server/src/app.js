@@ -5,14 +5,16 @@ import { readEnvironment } from './config/env.js'
 import { errorHandler } from './middleware/errorHandler.js'
 import { createRequireAuth } from './middleware/requireAuth.js'
 import createAdminRouter from './routes/admin.js'
+import createBookingsRouter from './routes/bookings.js'
+import { seatAvailability } from './controllers/bookingsController.js'
 import createFavoritesRouter from './routes/favorites.js'
 import healthRouter from './routes/health.js'
 import createMoviesRouter from './routes/movies.js'
 import createUsersRouter from './routes/users.js'
-import { getDashboard } from './services/adminService.js'
+import { getDashboard, listShowsWithBookingCounts } from './services/adminService.js'
 import * as favoriteService from './services/favoriteService.js'
 import * as movieService from './services/movieService.js'
-import { listShows, scheduleShows } from './services/showService.js'
+import { scheduleShows } from './services/showService.js'
 import { createTmdbService } from './services/tmdb.js'
 
 export function createApp({
@@ -35,13 +37,15 @@ export function createApp({
   app.use(cors({ origin: frontendOrigin }))
   app.use('/api', healthRouter)
   app.use('/api/movies', createMoviesRouter(movies))
+  app.get('/api/shows/:showId/seats', seatAvailability)
+  app.use('/api/bookings', authenticate, createBookingsRouter(requireAuth))
   app.use('/api/favorites', authenticate, createFavoritesRouter(requireAuth, favorites, movies))
   app.use('/api/users', authenticate, createUsersRouter(requireAuth))
   app.use('/api/admin', authenticate, createAdminRouter(requireAuth, {
     currency: cinemaCurrency,
     tmdb,
     dashboard: () => getDashboard(countUsers, cinemaCurrency),
-    listShows,
+    listShows: listShowsWithBookingCounts,
     scheduleShows: (input) => scheduleShows(input, cinemaCurrency, tmdb.fetchMovie),
   }))
   app.use(errorHandler)

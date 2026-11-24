@@ -1,6 +1,8 @@
 import app from './app.js'
 import { connectDatabase } from './config/database.js'
 import Favorite from './models/Favorite.js'
+import Booking from './models/Booking.js'
+import SeatClaim from './models/SeatClaim.js'
 import Movie from './models/Movie.js'
 import Show from './models/Show.js'
 
@@ -12,7 +14,7 @@ if (!MONGODB_URI) {
 
 try {
   await connectDatabase(MONGODB_URI)
-  await Promise.all([Favorite.init(), Movie.init(), Show.init()])
+  await Promise.all([Favorite.init(), Movie.init(), Show.init(), Booking.init(), SeatClaim.init()])
 } catch {
   console.error('Could not initialize MongoDB. Check MONGODB_URI and database availability.')
   process.exit(1)

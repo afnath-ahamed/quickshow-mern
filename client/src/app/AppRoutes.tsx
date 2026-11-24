@@ -7,10 +7,12 @@ import Home from '../pages/Home'
 import MovieDetails from '../pages/MovieDetails'
 import Movies from '../pages/Movies'
 import MyBookings from '../pages/MyBookings'
+import SeatSelection from '../pages/SeatSelection'
 import NotFound from '../pages/NotFound'
 import SignIn from '../pages/SignIn'
 import SignUp from '../pages/SignUp'
 import AddShow from '../pages/admin/AddShow'
+import Bookings from '../pages/admin/Bookings'
 import Dashboard from '../pages/admin/Dashboard'
 import Shows from '../pages/admin/Shows'
 import AdminLayout from './layouts/AdminLayout'
@@ -34,6 +36,7 @@ export default function AppRoutes() {
         <Route element={<RequireAuth />}>
           <Route path="favorites" element={<Favorites />} />
           <Route path="my-bookings" element={<MyBookings />} />
+          <Route path="shows/:showId/seats" element={<SeatSelection />} />
         </Route>
         <Route path="*" element={<NotFound />} />
       </Route>
@@ -43,6 +46,7 @@ export default function AppRoutes() {
             <Route index element={<Dashboard />} />
             <Route path="add-show" element={<AddShow />} />
             <Route path="shows" element={<Shows />} />
+            <Route path="bookings" element={<Bookings />} />
             <Route path="*" element={<NotFound />} />
           </Route>
         </Route>
