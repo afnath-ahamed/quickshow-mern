@@ -109,7 +109,7 @@ export function createPaymentService({ secretKey, webhookSecret, frontendOrigin,
         checkout = await stripe.checkout.sessions.create({
           mode: 'payment',
           adaptive_pricing: { enabled: false },
-          payment_method_types: ['card'],
+          allowed_payment_method_types: ['card'],
           client_reference_id: String(booking._id),
           metadata: { paymentId: String(payment._id) },
           success_url: result.href,

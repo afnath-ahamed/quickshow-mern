@@ -42,7 +42,7 @@ test('Stripe Checkout uses signed events, atomic fulfillment, and recoverable re
         assert.equal(input.line_items[0].price_data.unit_amount, show.priceMinor)
         assert.equal(input.line_items[0].price_data.currency, 'lkr')
         assert.equal(input.adaptive_pricing.enabled, false)
-        assert.deepEqual(input.payment_method_types, ['card'])
+        assert.deepEqual(input.allowed_payment_method_types, ['card'])
         assert.equal(new URL(input.success_url).origin, frontendOrigin)
         assert.equal(new URL(input.cancel_url).searchParams.get('cancelled'), '1')
         if (checkouts.has(options.idempotencyKey)) return checkouts.get(options.idempotencyKey)
