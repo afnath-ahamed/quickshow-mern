@@ -1,4 +1,17 @@
+import { useAuth } from '@clerk/react'
+import { Navigate, Outlet, useLocation } from 'react-router'
+import LoadingState from '../../shared/ui/LoadingState'
+
 export default function RequireAuth() {
-  // TODO: Implement this component in its feature branch.
-  return null
+  const { isLoaded, isSignedIn } = useAuth()
+  const { pathname, search, hash } = useLocation()
+
+  if (!isLoaded) return <LoadingState />
+
+  if (!isSignedIn) {
+    const redirect = encodeURIComponent(pathname + search + hash)
+    return <Navigate to={`/sign-in?redirect_url=${redirect}`} replace />
+  }
+
+  return <Outlet />
 }
