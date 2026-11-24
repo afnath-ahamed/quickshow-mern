@@ -1,6 +1,8 @@
 import app from './app.js'
 import { connectDatabase } from './config/database.js'
 import Favorite from './models/Favorite.js'
+import Movie from './models/Movie.js'
+import Show from './models/Show.js'
 
 const { MONGODB_URI, PORT = '5000' } = process.env
 
@@ -10,7 +12,7 @@ if (!MONGODB_URI) {
 
 try {
   await connectDatabase(MONGODB_URI)
-  await Favorite.init()
+  await Promise.all([Favorite.init(), Movie.init(), Show.init()])
 } catch {
   console.error('Could not initialize MongoDB. Check MONGODB_URI and database availability.')
   process.exit(1)

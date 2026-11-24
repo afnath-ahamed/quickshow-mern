@@ -1,28 +1,52 @@
 import catalog from '../data/sampleCatalog.json' with { type: 'json' }
+import Movie from '../models/Movie.js'
+import Show from '../models/Show.js'
+import { cinemaTimeZone, serializeShow } from './showService.js'
 
-export function listMovies() {
-  return catalog.movies.map(({ cast, trailerId, ...summary }) => summary)
+const sampleMovies = new Map(catalog.movies.map((movie) => [movie.id, movie]))
+
+function summary(movie) {
+  const { title, overview, posterUrl, backdropUrl, genres, releaseDate, originalLanguage, rating, runtime } = movie
+  return { id: movie.tmdbId ?? movie.id, title, overview, posterUrl, backdropUrl, genres, releaseDate, originalLanguage, rating, runtime }
+}
+
+export async function listMovies() {
+  const movieIds = await Show.distinct('movie', { startsAt: { $gt: new Date() }, movie: { $type: 'objectId' } })
+  const movies = await Movie.find({ _id: { $in: movieIds }, tmdbId: { $type: 'string' } }).sort({ title: 1, tmdbId: 1 }).lean()
+  return movies.map(summary)
 }
 
 export function listTrailers() {
   return catalog.trailers
 }
 
-export function findMovie(movieId, now = new Date()) {
-  const movie = catalog.movies.find(({ id }) => id === movieId)
+export async function findMovie(movieId) {
+  if (!/^[1-9][0-9]{0,9}$/.test(movieId)) return null
+  const storedMovie = await Movie.findOne({ tmdbId: movieId }).lean()
+  const movie = storedMovie ?? sampleMovies.get(movieId)
   if (!movie) return null
 
-  // Set showtimes at a fixed UTC hour and display them in the cinema's time zone.
-  const showtimes = Array.from({ length: 4 }, (_, day) => [8, 12, 15].map((hour) => {
-    const startsAt = new Date(Date.UTC(
-      now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + day + 1, hour,
-    )).toISOString()
-    return { id: `${movieId}-${startsAt}`, startsAt }
-  })).flat()
-
-  return { ...movie, showtimes, timeZone: 'Asia/Colombo' }
+  const shows = storedMovie
+    ? await Show.find({ movie: storedMovie._id, startsAt: { $gt: new Date() } }).sort({ startsAt: 1 }).lean()
+    : []
+  return {
+    ...summary(movie),
+    cast: movie.cast,
+    trailerId: movie.trailerId,
+    showtimes: shows.map((show) => serializeShow(show)),
+    timeZone: cinemaTimeZone,
+  }
 }
 
-export function movieExists(movieId) {
-  return catalog.movies.some(({ id }) => id === movieId)
+export async function listSavedMovies(movieIds) {
+  const records = await Movie.find({ tmdbId: { $in: movieIds } }).lean()
+  const storedMovies = new Map(records.map((movie) => [movie.tmdbId, movie]))
+  return movieIds.flatMap((id) => {
+    const movie = storedMovies.get(id) ?? sampleMovies.get(id)
+    return movie ? [summary(movie)] : []
+  })
+}
+
+export async function movieExists(movieId) {
+  return sampleMovies.has(movieId) || Boolean(await Movie.exists({ tmdbId: movieId }))
 }

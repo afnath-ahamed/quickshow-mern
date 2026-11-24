@@ -1,4 +1,5 @@
 import { request } from '../../shared/api/httpClient'
+import type { Movie } from './moviesApi'
 
 type GetToken = () => Promise<string | null>
 
@@ -8,11 +9,18 @@ async function authorization(getToken: GetToken) {
   return { Authorization: 'Bearer ' + token }
 }
 
-export async function getFavorites(getToken: GetToken, signal: AbortSignal) {
+async function readFavorites(getToken: GetToken, signal: AbortSignal) {
   const response = await request('/api/favorites', { headers: await authorization(getToken), signal })
   if (!response.ok) throw new Error('Could not load your favorites.')
-  const { movieIds } = await response.json() as { movieIds: string[] }
-  return movieIds
+  return response.json() as Promise<{ movieIds: string[]; movies: Movie[] }>
+}
+
+export async function getFavorites(getToken: GetToken, signal: AbortSignal) {
+  return (await readFavorites(getToken, signal)).movieIds
+}
+
+export async function getFavoriteMovies(getToken: GetToken, signal: AbortSignal) {
+  return (await readFavorites(getToken, signal)).movies
 }
 
 export async function updateFavorite(getToken: GetToken, movieId: string, saved: boolean) {

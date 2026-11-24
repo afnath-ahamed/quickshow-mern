@@ -2,20 +2,15 @@ import { useAuth } from '@clerk/react'
 import { ArrowRight } from 'lucide-react'
 import { useCallback, useState } from 'react'
 import { Link } from 'react-router'
-import { getFavorites, updateFavorite } from '../features/movies/favoritesApi'
+import { getFavoriteMovies, updateFavorite } from '../features/movies/favoritesApi'
 import MovieCard from '../features/movies/MovieCard'
-import { getMovies } from '../features/movies/moviesApi'
 import useMovieQuery from '../features/movies/useMovieQuery'
 import ErrorState from '../shared/ui/ErrorState'
 import LoadingState from '../shared/ui/LoadingState'
 
 function FavoriteMovies() {
   const { getToken } = useAuth()
-  const load = useCallback(async (signal: AbortSignal) => {
-    const [ids, { movies }] = await Promise.all([getFavorites(getToken, signal), getMovies(signal)])
-    const moviesById = new Map(movies.map((movie) => [movie.id, movie]))
-    return ids.flatMap((id) => moviesById.get(id) ?? [])
-  }, [getToken])
+  const load = useCallback((signal: AbortSignal) => getFavoriteMovies(getToken, signal), [getToken])
   const { result, retry } = useMovieQuery(load)
   const [removed, setRemoved] = useState<string[]>([])
   const [pending, setPending] = useState('')

@@ -14,7 +14,7 @@ export type Movie = {
 }
 
 export type Trailer = { id: string; title: string; thumbnailUrl: string }
-export type Showtime = { id: string; startsAt: string }
+export type Showtime = { id: string; startsAt: string; priceMinor: number; currency: string }
 export type MovieDetails = Movie & {
   cast: { name: string; imageUrl?: string }[]
   trailerId: string | null

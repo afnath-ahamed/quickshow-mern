@@ -1,12 +1,13 @@
 import { CalendarDays, Clock3 } from 'lucide-react'
 import { useState } from 'react'
+import { formatMinorCurrency } from '../../shared/lib/formatCurrency'
 import { formatShowtime } from '../../shared/lib/formatShowtime'
 import type { Showtime } from './moviesApi'
 
 export default function ShowtimePicker({ showtimes, timeZone }: { showtimes: Showtime[]; timeZone: string }) {
   const [date, setDate] = useState<string>()
   const [selectedId, setSelectedId] = useState<string>()
-  const dateFormat = new Intl.DateTimeFormat('en', { month: 'short', day: 'numeric', weekday: 'short', timeZone })
+  const dateFormat = new Intl.DateTimeFormat('en', { month: 'short', day: 'numeric', weekday: 'short', year: 'numeric', timeZone })
   const timeFormat = new Intl.DateTimeFormat('en', { hour: 'numeric', minute: '2-digit', timeZone })
   const days = new Map<string, Showtime[]>()
   for (const show of showtimes) {
@@ -24,7 +25,7 @@ export default function ShowtimePicker({ showtimes, timeZone }: { showtimes: Sho
       <h2 id="showtimes-heading" className="catalog-heading flex items-center gap-3">
         <CalendarDays aria-hidden="true" className="text-[#ff7790]" size={26} /> Choose a showtime
       </h2>
-      <p className="mt-2 text-sm text-slate-300">Sample screenings · {timeZone.replaceAll('_', ' ').replace('/', ' / ')}</p>
+      <p className="mt-2 text-sm text-slate-300">Screenings · {timeZone.replaceAll('_', ' ').replace('/', ' / ')}</p>
       {activeDate ? (
         <>
           <div aria-label="Screening dates" className="mt-5 flex flex-wrap gap-2" role="group">
@@ -42,7 +43,7 @@ export default function ShowtimePicker({ showtimes, timeZone }: { showtimes: Sho
             ))}
           </div>
           <p className="mt-5 min-h-6 text-sm text-slate-200" role="status">
-            {selectedShow ? 'Selected ' + formatShowtime(new Date(selectedShow.startsAt), timeZone, 'en') + '. Seat booking is coming in a later release.' : 'Select a time to preview your screening.'}
+            {selectedShow ? 'Selected ' + formatShowtime(new Date(selectedShow.startsAt), timeZone, 'en') + ' · ' + formatMinorCurrency(selectedShow.priceMinor, selectedShow.currency) + '. Seat booking is coming in a later release.' : 'Select a time to preview your screening.'}
           </p>
         </>
       ) : <p className="mt-5">No showtimes are available.</p>}

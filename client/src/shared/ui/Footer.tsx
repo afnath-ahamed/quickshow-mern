@@ -1,5 +1,6 @@
 import { Link } from 'react-router'
 import logo from '../assets/logo.svg'
+import tmdbLogo from '../assets/tmdb-logo.svg'
 
 export default function Footer() {
   return (
@@ -12,6 +13,17 @@ export default function Footer() {
           <Link className="hover:text-white" to="/my-bookings">My bookings</Link>
         </nav>
       </div>
+      <section aria-labelledby="footer-credits" className="catalog-container border-t border-white/10 py-5">
+        <h2 id="footer-credits" className="mb-2 text-sm font-semibold">Credits</h2>
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+          <a href="https://www.themoviedb.org/" className="inline-flex min-h-7 w-24 shrink-0 items-center rounded-sm">
+            <img alt="The Movie Database (TMDB)" src={tmdbLogo} width={96} />
+          </a>
+          <p className="text-sm text-slate-300">
+            This product uses the TMDB API but is not endorsed or certified by TMDB.
+          </p>
+        </div>
+      </section>
     </footer>
   )
 }

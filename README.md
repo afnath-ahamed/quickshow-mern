@@ -6,8 +6,9 @@ QuickShow is a movie ticket booking app in development. The current setup runs a
 
 - **The setup works locally.** Vite serves the QuickShow homepage, and the Express server connects to MongoDB through Mongoose and serves `GET /api/health`. GitHub Actions installs both apps, lints and builds the client, and runs the server test command.
 - **Clerk authentication.** The React app has sign-in and sign-up pages plus an account menu. Express verifies the Clerk session for account endpoints and checks the user's Clerk role for admin access.
-- **Movie catalog and favorites.** Browse the public storefront, view movie details and trailers, and preview a sample screening. Signed-in users can save and remove movies in their own MongoDB-backed favorites list.
-- **Upcoming features.** Live show scheduling, seat booking, Stripe Checkout, and Inngest jobs for Clerk user sync, seat expiry, and email. The Vercel configuration files are in place for deployment.
+- **Movie catalog and favorites.** Browse the public storefront, view movie details and trailers, and view upcoming screenings scheduled by an admin. Signed-in users can save and remove movies in their own MongoDB-backed favorites list.
+- **Admin scheduling.** Admins can browse TMDB Now Playing, schedule priced screenings, and review their schedule. Upcoming screenings power the public catalog.
+- **Upcoming features.** Seat booking, Stripe Checkout, and Inngest jobs for Clerk user sync, seat expiry, and email. The Vercel configuration files are in place for deployment.
 
 ## Development plan
 
@@ -116,9 +117,21 @@ The [CI workflow](.github/workflows/ci.yml) runs on pull requests and pushes to 
 
 ### Verify the movie catalog locally
 
-1. Open the homepage, select a trailer, and use **Explore movies** to browse the catalog.
-2. Open a movie, check its cast, and use **Buy tickets** to jump to the sample showtimes. Select a date and time. Seat booking arrives in a later step.
+1. Schedule a screening through the admin area, then open the homepage, select a trailer, and use **Explore movies** to browse the catalog.
+2. Open a scheduled movie, check its cast, and use **Buy tickets** to jump to its schedule. Select a date and time to see the price. Seat booking arrives in a later step.
 3. Sign in, add that movie to Favorites, reload the Favorites page, then remove it. Sign in as a second user to confirm favorites belong to each account.
 4. Open a detail URL with an unknown ID and confirm it shows **Movie not found**.
 
-The catalog API reads the supplied fixtures from [`server/src/data/sampleCatalog.json`](server/src/data/sampleCatalog.json). It generates future sample showtimes displayed in the Colombo time zone. Catalog endpoints are `GET /api/movies` and `GET /api/movies/:movieId`. Favorites use `GET /api/favorites`, `PUT /api/favorites/:movieId`, and `DELETE /api/favorites/:movieId` with a Clerk session token. Live show data will replace the sample catalog in the admin scheduling step.
+MongoDB supplies upcoming screenings. [The Step 03 fixtures](server/src/data/sampleCatalog.json) preserve older movie links, favorites, and featured trailers. Catalog endpoints are `GET /api/movies` and `GET /api/movies/:movieId`. Favorites use `GET /api/favorites`, `PUT /api/favorites/:movieId`, and `DELETE /api/favorites/:movieId` with a Clerk session token.
+
+### Verify admin scheduling locally
+
+Add the [TMDB API read access token](https://developer.themoviedb.org/docs/getting-started) to the git-ignored server environment as `TMDB_READ_TOKEN`. Set `CINEMA_CURRENCY` in that file if you need a development currency other than LKR. Restart Express after updating the environment. Film metadata and imagery are provided by [TMDB](https://www.themoviedb.org/).
+
+1. Sign in as a development admin. Open `/admin/add-show`, choose a TMDB title, enter the ticket price, and add two future dates or times. Enter times in Asia/Colombo.
+2. Save the screenings. Confirm the dashboard and List Shows display the saved movie, time, and price.
+3. Open the public catalog while signed out and confirm that Movie Details lists the same screenings. A database with zero upcoming screenings displays an empty catalog.
+4. Submit the same slots again. Each unique movie and start time remains a single screening with its original price. A failed request can be retried.
+5. Confirm a regular account receives HTTP 403 on the admin API. Signed-out requests receive HTTP 401.
+
+The admin API provides `GET /api/admin/dashboard`, `GET /api/admin/movies/now-playing`, and `GET` and `POST /api/admin/shows`. The dashboard counts upcoming screenings and Clerk users. Live booking figures arrive with seat booking, and revenue figures arrive with checkout.
