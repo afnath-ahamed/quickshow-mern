@@ -46,6 +46,7 @@ test('public catalog lists unique movies and serves future showtimes for a valid
   assert.equal(detail.status, 200)
   const { movie } = await detail.json()
   assert.equal(movie.title, movies[0].title)
+  assert.equal(movie.originalLanguage, 'en')
   assert.ok(movie.cast.length)
   assert.ok(movie.showtimes.length > 1)
   assert.equal(new Set(movie.showtimes.map(({ id }) => id)).size, movie.showtimes.length)

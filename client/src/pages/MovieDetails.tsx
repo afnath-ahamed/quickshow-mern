@@ -12,6 +12,8 @@ import useMovieQuery from '../features/movies/useMovieQuery'
 import ErrorState from '../shared/ui/ErrorState'
 import LoadingState from '../shared/ui/LoadingState'
 
+const languageNames = new Intl.DisplayNames('en', { type: 'language' })
+
 function MovieContent({ movie }: { movie: Movie }) {
   const [trailerOpen, setTrailerOpen] = useState(false)
   const catalog = useMovieQuery(getMovies)
@@ -34,7 +36,9 @@ function MovieContent({ movie }: { movie: Movie }) {
           <h1 className="catalog-page-title">{movie.title}</h1>
           <p className="mt-4 flex flex-wrap items-center gap-3 text-sm text-slate-200 sm:text-base">
             <span className="inline-flex items-center gap-1.5"><Star fill="currentColor" className="text-amber-300" size={16} aria-hidden="true" /> {movie.rating.toFixed(1)} / 10</span>
-            <span>{formatRuntime(movie.runtime)}</span><span>{movie.releaseDate.slice(0, 4)}</span>
+            <span>{formatRuntime(movie.runtime)}</span>
+            <span>{movie.releaseDate.slice(0, 4)}</span>
+            {movie.originalLanguage && <span>Original language: {languageNames.of(movie.originalLanguage)}</span>}
           </p>
           <p className="mt-5 max-w-2xl text-base leading-relaxed text-slate-200 sm:text-lg">{movie.overview}</p>
           <div className="mt-6 flex flex-wrap gap-3">

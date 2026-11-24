@@ -8,6 +8,7 @@ export type Movie = {
   backdropUrl: string
   genres: string[]
   releaseDate: string
+  originalLanguage: string
   rating: number
   runtime: number
 }

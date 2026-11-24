@@ -14,6 +14,7 @@
       "releaseDate": "2025-02-27",
       "rating": 6.4,
       "runtime": 102,
+      "originalLanguage": "en",
       "cast": [
         {
           "name": "Milla Jovovich",
@@ -51,21 +52,27 @@
       "releaseDate": "2025-04-23",
       "rating": 6.405,
       "runtime": 103,
+      "originalLanguage": "en",
       "cast": [
         {
-          "name": "Ella Rubin"
+          "name": "Ella Rubin",
+          "imageUrl": "https://image.tmdb.org/t/p/w185/6JVMTzo7SJK8ohYi3eBX2F2c4M9.jpg"
         },
         {
-          "name": "Michael Cimino"
+          "name": "Michael Cimino",
+          "imageUrl": "https://image.tmdb.org/t/p/w185/hixktl0ssobutw3csX3yQaEbRbA.jpg"
         },
         {
-          "name": "Odessa A’zion"
+          "name": "Odessa A’zion",
+          "imageUrl": "https://image.tmdb.org/t/p/w185/5Q0Z5O3nkZH5JvueTyc2q0anw2B.jpg"
         },
         {
-          "name": "Ji-young Yoo"
+          "name": "Ji-young Yoo",
+          "imageUrl": "https://image.tmdb.org/t/p/w185/4jgtqpNWhMx8XOKQ9qQJvDdzbxG.jpg"
         },
         {
-          "name": "Belmont Cameli"
+          "name": "Belmont Cameli",
+          "imageUrl": "https://image.tmdb.org/t/p/w185/jNppTEDdwx4XBqUX0D8mZwqP2mh.jpg"
         }
       ],
       "trailerId": "2b3vBaINZ7w"
@@ -84,21 +91,27 @@
       "releaseDate": "2025-05-17",
       "rating": 7.117,
       "runtime": 108,
+      "originalLanguage": "en",
       "cast": [
         {
-          "name": "Maia Kealoha"
+          "name": "Maia Kealoha",
+          "imageUrl": "https://image.tmdb.org/t/p/w185/jqsKbBF28V2Oq5tKPR5USkNufwC.jpg"
         },
         {
-          "name": "Sydney Agudong"
+          "name": "Sydney Agudong",
+          "imageUrl": "https://image.tmdb.org/t/p/w185/3K5hJ3meeClHWsPKetqd9qgyveJ.jpg"
         },
         {
-          "name": "Zach Galifianakis"
+          "name": "Zach Galifianakis",
+          "imageUrl": "https://image.tmdb.org/t/p/w185/qsDfoUlRnXHUiqZeBPWHzmgmKGX.jpg"
         },
         {
-          "name": "Billy Magnussen"
+          "name": "Billy Magnussen",
+          "imageUrl": "https://image.tmdb.org/t/p/w185/ugyx7Wn2uAWsNlR5eX4yWFsGV2Y.jpg"
         },
         {
-          "name": "Chris Sanders"
+          "name": "Chris Sanders",
+          "imageUrl": "https://image.tmdb.org/t/p/w185/mrUm1agSL9Kj6dhV6ABVJvrwlie.jpg"
         }
       ],
       "trailerId": "VWqJifMMgZE"
@@ -117,21 +130,27 @@
       "releaseDate": "2025-04-25",
       "rating": 6.537,
       "runtime": 107,
+      "originalLanguage": "en",
       "cast": [
         {
-          "name": "Tom Hardy"
+          "name": "Tom Hardy",
+          "imageUrl": "https://image.tmdb.org/t/p/w185/d81K0RH8UX7tZj49tZaQhZ9ewH.jpg"
         },
         {
-          "name": "Jessie Mei Li"
+          "name": "Jessie Mei Li",
+          "imageUrl": "https://image.tmdb.org/t/p/w185/3OREEt5tcqkVNMuaino7qA6hSWG.jpg"
         },
         {
-          "name": "Timothy Olyphant"
+          "name": "Timothy Olyphant",
+          "imageUrl": "https://image.tmdb.org/t/p/w185/ccQzw9I1BYBv0HHVJr4cvAWjtkI.jpg"
         },
         {
-          "name": "Forest Whitaker"
+          "name": "Forest Whitaker",
+          "imageUrl": "https://image.tmdb.org/t/p/w185/4w7l5JUwnwFNBy7J93ZwYN1nihm.jpg"
         },
         {
-          "name": "Luis Guzmán"
+          "name": "Luis Guzmán",
+          "imageUrl": "https://image.tmdb.org/t/p/w185/kSdxUckOJj9R5VKrLUnRy14YhNV.jpg"
         }
       ],
       "trailerId": "6txjTWLoSc8"
@@ -151,21 +170,27 @@
       "releaseDate": "2025-03-31",
       "rating": 6.516,
       "runtime": 101,
+      "originalLanguage": "en",
       "cast": [
         {
-          "name": "Jason Momoa"
+          "name": "Jason Momoa",
+          "imageUrl": "https://image.tmdb.org/t/p/w185/rsdpJXHtKDq4oAlWQyF01N4neBV.jpg"
         },
         {
-          "name": "Jack Black"
+          "name": "Jack Black",
+          "imageUrl": "https://image.tmdb.org/t/p/w185/rtCx0fiYxJVhzXXdwZE2XRTfIKE.jpg"
         },
         {
-          "name": "Emma Myers"
+          "name": "Emma Myers",
+          "imageUrl": "https://image.tmdb.org/t/p/w185/v1Y8RP39135ZOary9M4MbkrCAdn.jpg"
         },
         {
-          "name": "Danielle Brooks"
+          "name": "Danielle Brooks",
+          "imageUrl": "https://image.tmdb.org/t/p/w185/hwrMFbcALcqrV7S2pRP9C5BXrU0.jpg"
         },
         {
-          "name": "Sebastian Hansen"
+          "name": "Sebastian Eugene Hansen",
+          "imageUrl": "https://image.tmdb.org/t/p/w185/40HNkoB3RKPMPgLhTyKQU6kG0sc.jpg"
         }
       ],
       "trailerId": "8B1EtVPBSMw"
@@ -184,21 +209,27 @@
       "releaseDate": "2025-05-17",
       "rating": 7.042,
       "runtime": 170,
+      "originalLanguage": "en",
       "cast": [
         {
-          "name": "Tom Cruise"
+          "name": "Tom Cruise",
+          "imageUrl": "https://image.tmdb.org/t/p/w185/maf8PhSvDCdEwjEMbYfGpojR5RP.jpg"
         },
         {
-          "name": "Hayley Atwell"
+          "name": "Hayley Atwell",
+          "imageUrl": "https://image.tmdb.org/t/p/w185/x57wXHexIjD2ywly9cRA4rov7cu.jpg"
         },
         {
-          "name": "Ving Rhames"
+          "name": "Ving Rhames",
+          "imageUrl": "https://image.tmdb.org/t/p/w185/tOVDvu1EQP78AwaUw6uh1wN818E.jpg"
         },
         {
-          "name": "Simon Pegg"
+          "name": "Simon Pegg",
+          "imageUrl": "https://image.tmdb.org/t/p/w185/jw8bEEoTOithyNf0qxu4Zt1yaKp.jpg"
         },
         {
-          "name": "Vanessa Kirby"
+          "name": "Esai Morales",
+          "imageUrl": "https://image.tmdb.org/t/p/w185/cNYciYzUzxraGlw0BPql1QePi5H.jpg"
         }
       ],
       "trailerId": "NOhDyUmT9z0"
@@ -217,21 +248,27 @@
       "releaseDate": "2025-04-30",
       "rating": 7.443,
       "runtime": 127,
+      "originalLanguage": "en",
       "cast": [
         {
-          "name": "Florence Pugh"
+          "name": "Florence Pugh",
+          "imageUrl": "https://image.tmdb.org/t/p/w185/qqDsryavx9rwSMhDAxW6OC7oNQg.jpg"
         },
         {
-          "name": "Sebastian Stan"
+          "name": "Sebastian Stan",
+          "imageUrl": "https://image.tmdb.org/t/p/w185/v20RLWst39klatsqUgSrwHxhwee.jpg"
         },
         {
-          "name": "David Harbour"
+          "name": "David Harbour",
+          "imageUrl": "https://image.tmdb.org/t/p/w185/qMFtMWlYVtFVyBoBhX5IoA5sN5a.jpg"
         },
         {
-          "name": "Wyatt Russell"
+          "name": "Wyatt Russell",
+          "imageUrl": "https://image.tmdb.org/t/p/w185/zIldBzXdBWskPZB7x35G2hYEVDo.jpg"
         },
         {
-          "name": "Hannah John-Kamen"
+          "name": "Hannah John-Kamen",
+          "imageUrl": "https://image.tmdb.org/t/p/w185/2fqNQQW3B7upH4rBubhxXkIIoGk.jpg"
         }
       ],
       "trailerId": "-sAOWhvheK8"
