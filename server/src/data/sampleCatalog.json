@@ -1,0 +1,262 @@
+{
+  "movies": [
+    {
+      "id": "324544",
+      "title": "In the Lost Lands",
+      "overview": "A queen sends the powerful and feared sorceress Gray Alys to the ghostly wilderness of the Lost Lands in search of a magical power, where she and her guide, the drifter Boyce, must outwit and outfight both man and demon.",
+      "posterUrl": "https://image.tmdb.org/t/p/w500/dDlfjR7gllmr8HTeN6rfrYhTdwX.jpg",
+      "backdropUrl": "https://image.tmdb.org/t/p/w1280/op3qmNhvwEvyT7UFyPbIfQmKriB.jpg",
+      "genres": [
+        "Action",
+        "Fantasy",
+        "Adventure"
+      ],
+      "releaseDate": "2025-02-27",
+      "rating": 6.4,
+      "runtime": 102,
+      "cast": [
+        {
+          "name": "Milla Jovovich",
+          "imageUrl": "https://image.tmdb.org/t/p/w185/usWnHCzbADijULREZYSJ0qfM00y.jpg"
+        },
+        {
+          "name": "Dave Bautista",
+          "imageUrl": "https://image.tmdb.org/t/p/w185/snk6JiXOOoRjPtHU5VMoy6qbd32.jpg"
+        },
+        {
+          "name": "Arly Jover",
+          "imageUrl": "https://image.tmdb.org/t/p/w185/zmznPrQ9GSZwcOIUT0c3GyETwrP.jpg"
+        },
+        {
+          "name": "Amara Okereke",
+          "imageUrl": "https://image.tmdb.org/t/p/w185/nTSPtzWu6deZTJtWXHUpACVznY4.jpg"
+        },
+        {
+          "name": "Fraser James",
+          "imageUrl": "https://image.tmdb.org/t/p/w185/mGAPQG2OKTgdKFkp9YpvCSqcbgY.jpg"
+        }
+      ],
+      "trailerId": "CMyrp5Vk3mU"
+    },
+    {
+      "id": "1232546",
+      "title": "Until Dawn",
+      "overview": "One year after her sister Melanie mysteriously disappeared, Clover and her friends head into the remote valley where she vanished in search of answers. Exploring an abandoned visitor center, they find themselves stalked by a masked killer and horrifically murdered one by one...only to wake up and find themselves back at the beginning of the same evening.",
+      "posterUrl": "https://image.tmdb.org/t/p/w500/juA4IWO52Fecx8lhAsxmDgy3M3.jpg",
+      "backdropUrl": "https://image.tmdb.org/t/p/w1280/icFWIk1KfkWLZnugZAJEDauNZ94.jpg",
+      "genres": [
+        "Horror",
+        "Mystery"
+      ],
+      "releaseDate": "2025-04-23",
+      "rating": 6.405,
+      "runtime": 103,
+      "cast": [
+        {
+          "name": "Ella Rubin"
+        },
+        {
+          "name": "Michael Cimino"
+        },
+        {
+          "name": "Odessa A’zion"
+        },
+        {
+          "name": "Ji-young Yoo"
+        },
+        {
+          "name": "Belmont Cameli"
+        }
+      ],
+      "trailerId": "2b3vBaINZ7w"
+    },
+    {
+      "id": "552524",
+      "title": "Lilo & Stitch",
+      "overview": "The wildly funny and touching story of a lonely Hawaiian girl and the fugitive alien who helps to mend her broken family.",
+      "posterUrl": "https://image.tmdb.org/t/p/w500/mKKqV23MQ0uakJS8OCE2TfV5jNS.jpg",
+      "backdropUrl": "https://image.tmdb.org/t/p/w1280/7Zx3wDG5bBtcfk8lcnCWDOLM4Y4.jpg",
+      "genres": [
+        "Family",
+        "Comedy",
+        "Science Fiction"
+      ],
+      "releaseDate": "2025-05-17",
+      "rating": 7.117,
+      "runtime": 108,
+      "cast": [
+        {
+          "name": "Maia Kealoha"
+        },
+        {
+          "name": "Sydney Agudong"
+        },
+        {
+          "name": "Zach Galifianakis"
+        },
+        {
+          "name": "Billy Magnussen"
+        },
+        {
+          "name": "Chris Sanders"
+        }
+      ],
+      "trailerId": "VWqJifMMgZE"
+    },
+    {
+      "id": "668489",
+      "title": "Havoc",
+      "overview": "When a drug heist swerves lethally out of control, a jaded cop fights his way through a corrupt city's criminal underworld to save a politician's son.",
+      "posterUrl": "https://image.tmdb.org/t/p/w500/ubP2OsF3GlfqYPvXyLw9d78djGX.jpg",
+      "backdropUrl": "https://image.tmdb.org/t/p/w1280/65MVgDa6YjSdqzh7YOA04mYkioo.jpg",
+      "genres": [
+        "Action",
+        "Crime",
+        "Thriller"
+      ],
+      "releaseDate": "2025-04-25",
+      "rating": 6.537,
+      "runtime": 107,
+      "cast": [
+        {
+          "name": "Tom Hardy"
+        },
+        {
+          "name": "Jessie Mei Li"
+        },
+        {
+          "name": "Timothy Olyphant"
+        },
+        {
+          "name": "Forest Whitaker"
+        },
+        {
+          "name": "Luis Guzmán"
+        }
+      ],
+      "trailerId": "6txjTWLoSc8"
+    },
+    {
+      "id": "950387",
+      "title": "A Minecraft Movie",
+      "overview": "Four misfits find themselves struggling with ordinary problems when they are suddenly pulled through a mysterious portal into the Overworld: a bizarre, cubic wonderland that thrives on imagination. To get back home, they'll have to master this world while embarking on a magical quest with an unexpected, expert crafter, Steve.",
+      "posterUrl": "https://image.tmdb.org/t/p/w500/yFHHfHcUgGAxziP1C3lLt0q2T4s.jpg",
+      "backdropUrl": "https://image.tmdb.org/t/p/w1280/2Nti3gYAX513wvhp8IiLL6ZDyOm.jpg",
+      "genres": [
+        "Family",
+        "Comedy",
+        "Adventure",
+        "Fantasy"
+      ],
+      "releaseDate": "2025-03-31",
+      "rating": 6.516,
+      "runtime": 101,
+      "cast": [
+        {
+          "name": "Jason Momoa"
+        },
+        {
+          "name": "Jack Black"
+        },
+        {
+          "name": "Emma Myers"
+        },
+        {
+          "name": "Danielle Brooks"
+        },
+        {
+          "name": "Sebastian Hansen"
+        }
+      ],
+      "trailerId": "8B1EtVPBSMw"
+    },
+    {
+      "id": "575265",
+      "title": "Mission: Impossible - The Final Reckoning",
+      "overview": "Ethan Hunt and team continue their search for the terrifying AI known as the Entity — which has infiltrated intelligence networks all over the globe — with the world's governments and a mysterious ghost from Hunt's past on their trail. Joined by new allies and armed with the means to shut the Entity down for good, Hunt is in a race against time to prevent the world as we know it from changing forever.",
+      "posterUrl": "https://image.tmdb.org/t/p/w500/z53D72EAOxGRqdr7KXXWp9dJiDe.jpg",
+      "backdropUrl": "https://image.tmdb.org/t/p/w1280/1p5aI299YBnqrEEvVGJERk2MXXb.jpg",
+      "genres": [
+        "Action",
+        "Adventure",
+        "Thriller"
+      ],
+      "releaseDate": "2025-05-17",
+      "rating": 7.042,
+      "runtime": 170,
+      "cast": [
+        {
+          "name": "Tom Cruise"
+        },
+        {
+          "name": "Hayley Atwell"
+        },
+        {
+          "name": "Ving Rhames"
+        },
+        {
+          "name": "Simon Pegg"
+        },
+        {
+          "name": "Vanessa Kirby"
+        }
+      ],
+      "trailerId": "NOhDyUmT9z0"
+    },
+    {
+      "id": "986056",
+      "title": "Thunderbolts*",
+      "overview": "After finding themselves ensnared in a death trap, seven disillusioned castoffs must embark on a dangerous mission that will force them to confront the darkest corners of their pasts.",
+      "posterUrl": "https://image.tmdb.org/t/p/w500/m9EtP1Yrzv6v7dMaC9mRaGhd1um.jpg",
+      "backdropUrl": "https://image.tmdb.org/t/p/w1280/rthMuZfFv4fqEU4JVbgSW9wQ8rs.jpg",
+      "genres": [
+        "Action",
+        "Science Fiction",
+        "Adventure"
+      ],
+      "releaseDate": "2025-04-30",
+      "rating": 7.443,
+      "runtime": 127,
+      "cast": [
+        {
+          "name": "Florence Pugh"
+        },
+        {
+          "name": "Sebastian Stan"
+        },
+        {
+          "name": "David Harbour"
+        },
+        {
+          "name": "Wyatt Russell"
+        },
+        {
+          "name": "Hannah John-Kamen"
+        }
+      ],
+      "trailerId": "-sAOWhvheK8"
+    }
+  ],
+  "trailers": [
+    {
+      "id": "WpW36ldAqnM",
+      "title": "Ironheart",
+      "thumbnailUrl": "https://i.ytimg.com/vi/WpW36ldAqnM/mqdefault.jpg"
+    },
+    {
+      "id": "-sAOWhvheK8",
+      "title": "Thunderbolts*",
+      "thumbnailUrl": "https://i.ytimg.com/vi/-sAOWhvheK8/mqdefault.jpg"
+    },
+    {
+      "id": "1pHDWnXmK7Y",
+      "title": "Captain America: Brave New World",
+      "thumbnailUrl": "https://i.ytimg.com/vi/1pHDWnXmK7Y/mqdefault.jpg"
+    },
+    {
+      "id": "umiKiW4En9g",
+      "title": "What If…? Season 3",
+      "thumbnailUrl": "https://i.ytimg.com/vi/umiKiW4En9g/mqdefault.jpg"
+    }
+  ]
+}

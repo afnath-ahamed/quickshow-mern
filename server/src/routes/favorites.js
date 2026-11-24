@@ -1,6 +1,14 @@
 import { Router } from 'express'
+import createFavoritesController from '../controllers/favoritesController.js'
 
-const router = Router()
+export default function createFavoritesRouter(requireAuth, favorites) {
+  const router = Router()
+  const controller = createFavoritesController(favorites)
 
-// TODO: Register the favorites handlers in its feature branch.
-export default router
+  router.use(requireAuth)
+  router.get('/', controller.list)
+  router.put('/:movieId', controller.save)
+  router.delete('/:movieId', controller.remove)
+
+  return router
+}

@@ -1,6 +1,9 @@
 import { Router } from 'express'
+import { getMovie, getMovies } from '../controllers/moviesController.js'
 
 const router = Router()
 
-// TODO: Register the movies handlers in its feature branch.
+router.get('/', getMovies)
+router.get('/:movieId', getMovie)
+
 export default router
