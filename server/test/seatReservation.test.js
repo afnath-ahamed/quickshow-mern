@@ -57,6 +57,7 @@ test('seat holds are atomic, idempotent, private, and expire', { timeout: 180_00
     assert.equal((await hold(undefined, ['A1'])).status, 401)
     assert.equal((await call('/bookings/me')).status, 401)
     assert.equal((await call('/admin/bookings', 'alice')).status, 403)
+    assert.equal((await call('/admin/bookings?showId=invalid', 'admin')).status, 404)
     assert.equal((await hold('alice', ['K1'])).status, 400)
     assert.equal((await hold('alice', ['A1', 'A1'])).status, 400)
     assert.equal((await hold('alice', ['A1', 'A2', 'A3', 'A4', 'A5', 'A6'])).status, 400)

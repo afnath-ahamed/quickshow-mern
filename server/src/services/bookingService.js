@@ -126,7 +126,7 @@ export async function listBookings({ userId, page, showId }) {
   const filter = userId ? { userId } : { userId: { $type: 'string' } }
   if (showId) {
     assertShowId(showId)
-    filter.show = showId
+    filter.show = new mongoose.Types.ObjectId(String(showId))
   }
   const [records, total] = await Promise.all([
     Booking.find(filter).sort({ createdAt: -1, _id: -1 }).skip((page - 1) * pageSize).limit(pageSize).lean(),
