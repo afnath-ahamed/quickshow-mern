@@ -9,7 +9,8 @@ QuickShow is a movie ticket booking app in development. The current setup runs a
 - **Movie catalog and favorites.** Browse the public storefront, view movie details and trailers, and view upcoming screenings scheduled by an admin. Signed-in users can save and remove movies in their own MongoDB-backed favorites list.
 - **Admin scheduling.** Admins can browse TMDB Now Playing, schedule priced screenings, and review their schedule. Upcoming screenings power the public catalog.
 - **Seat booking.** Signed-in customers can reserve up to five seats for a screening, review active and expired holds in My Bookings, and see availability before reserving. Admins can review reservations by screening.
-- **Upcoming features.** Stripe Checkout and Inngest jobs for Clerk user sync, seat expiry, and email. The Vercel configuration files are in place for deployment.
+- **Stripe Checkout.** In a sandbox, customers can pay for an active hold. Signed Stripe events confirm seats and update verified revenue. Late or unfulfillable payments follow the refund path.
+- **Upcoming features.** Inngest jobs for Clerk user sync, seat expiry, and email. The Vercel configuration files are in place for deployment.
 
 ## Development plan
 
@@ -100,7 +101,7 @@ npm.cmd run typecheck
 npm.cmd run build
 ```
 
-From `server/`, run the Node.js test runner. The auth and catalog tests exercise access checks, movie details, future showtimes, and favorite ownership using controlled Clerk and storage responses. The reservation tests start an isolated MongoDB replica set and may download the MongoDB test binary on first run. The Stripe webhook test is still a TODO.
+From `server/`, run the Node.js test runner. The auth and catalog tests exercise access checks, movie details, future showtimes, and favorite ownership using controlled Clerk and storage responses. The reservation tests start an isolated MongoDB replica set and may download the MongoDB test binary on first run. The Stripe tests use the SDK to sign webhook fixtures and exercise checkout, refunds, and fulfillment against an isolated replica set.
 
 ```powershell
 npm.cmd test
@@ -135,7 +136,7 @@ Add the [TMDB API read access token](https://developer.themoviedb.org/docs/getti
 4. Submit the same slots again. Each unique movie and start time remains a single screening with its original price. A failed request can be retried.
 5. Confirm a regular account receives HTTP 403 on the admin API. Signed-out requests receive HTTP 401.
 
-The admin API provides `GET /api/admin/dashboard`, `GET /api/admin/movies/now-playing`, and `GET` and `POST /api/admin/shows`. The dashboard counts upcoming screenings and Clerk users. The dashboard reports active holds and confirmed bookings separately. Revenue figures arrive with checkout.
+The admin API provides `GET /api/admin/dashboard`, `GET /api/admin/movies/now-playing`, and `GET` and `POST /api/admin/shows`. The dashboard counts upcoming screenings and Clerk users. The dashboard reports active holds and confirmed bookings separately. The dashboard and List Shows include confirmed Stripe revenue by currency.
 
 ### Verify seat booking locally
 
@@ -146,3 +147,18 @@ The admin API provides `GET /api/admin/dashboard`, `GET /api/admin/movies/now-pl
 5. As an admin, open **List Bookings** or follow the booking-count link for a specific screening in **List Shows**.
 
 The seat API is `GET /api/shows/:showId/seats`. Creating a hold and viewing personal history require Clerk through `POST /api/bookings` and `GET /api/bookings/me`. `GET /api/admin/bookings` requires the admin role and optionally accepts a `showId` filter. MongoDB transactions keep all selected seats and the reservation record consistent. A unique index prevents multiple claims for the same seat and screening.
+
+### Verify Stripe Checkout locally
+
+1. Add the Stripe sandbox secret key to the git-ignored `server/.env` as `STRIPE_SECRET_KEY`. Use a currency supported by that sandbox when scheduling the test screening. Changing `CINEMA_CURRENCY` affects new screenings.
+2. Authenticate the Stripe CLI in your sandbox and run this listener. Copy its signing secret into `STRIPE_WEBHOOK_SECRET` in `server/.env` and restart Express. Use the configured API port if you changed it.
+
+   ```powershell
+   stripe listen --events checkout.session.completed,refund.updated,refund.failed --forward-to http://localhost:5000/api/stripe/webhook
+   ```
+
+3. Reserve seats, open **My Bookings**, and choose **Pay Now**. Complete the hosted checkout with a [Stripe test card](https://docs.stripe.com/testing#cards). Confirm that the result page and My Bookings show the confirmed reservation. Check the admin dashboard and List Shows for the verified amount.
+4. For a separate reservation, cancel or use a decline test card. Retry within the original hold and confirm the same Checkout Session is reused. No checkout link is issued once the hold expires.
+5. Verify the late-payment path with an expired hold. Stripe's hosted page can outlast the seat hold. QuickShow closes open sessions when expiry is detected and refunds paid sessions that cannot confirm seats. Inngest cleanup is a later step.
+
+`POST /api/checkout/:bookingId` opens checkout and `GET /api/checkout/:bookingId` reports status for the owner. The raw `POST /api/stripe/webhook` route verifies Stripe signatures before processing events. Stripe keys and signing secrets stay out of Git.

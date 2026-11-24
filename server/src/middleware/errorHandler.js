@@ -1,11 +1,15 @@
 import { TmdbError } from '../services/tmdb.js'
 import { BookingError } from '../services/bookingService.js'
+import { PaymentError } from '../services/paymentService.js'
 
 export function errorHandler(error, _request, response, next) {
   if (response.headersSent) return next(error)
 
   if (error instanceof BookingError) {
     return response.status(error.status).json({ message: error.message, code: error.code })
+  }
+  if (error instanceof PaymentError) {
+    return response.status(error.status).json({ message: error.message })
   }
 
   // Forward fixed application messages for expected integration failures.

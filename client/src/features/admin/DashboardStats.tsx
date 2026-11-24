@@ -1,4 +1,5 @@
 import { CalendarDays, CircleDollarSign, Ticket, Users } from 'lucide-react'
+import { formatMinorCurrency } from '../../shared/lib/formatCurrency'
 import type { DashboardData } from './adminApi'
 
 export default function DashboardStats({ data }: { data: DashboardData }) {
@@ -7,7 +8,9 @@ export default function DashboardStats({ data }: { data: DashboardData }) {
     { label: 'Total users', value: data.users ?? 'Unavailable', icon: Users },
     { label: 'Active holds', value: data.bookingCounts.holds, icon: Ticket },
     { label: 'Confirmed bookings', value: data.bookingCounts.confirmed, icon: Ticket },
-    { label: 'Total revenue', value: 'Pending', icon: CircleDollarSign },
+    { label: 'Confirmed revenue', value: data.revenue.length
+      ? data.revenue.map(({ amountMinor, currency }) => formatMinorCurrency(amountMinor, currency)).join(' · ')
+      : formatMinorCurrency(0, data.currency), icon: CircleDollarSign },
   ]
 
   return (

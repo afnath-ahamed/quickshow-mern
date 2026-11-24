@@ -1,6 +1,7 @@
 import { request } from '../../shared/api/httpClient'
 
 type GetToken = () => Promise<string | null>
+export type RevenueTotal = { currency: string; amountMinor: number }
 
 export type Screening = {
   id: string
@@ -10,6 +11,7 @@ export type Screening = {
   priceMinor: number
   currency: string
   bookingCounts?: { holds: number; confirmed: number }
+  revenue?: RevenueTotal[]
 }
 
 type ScheduleSettings = {
@@ -22,6 +24,7 @@ export type DashboardData = ScheduleSettings & {
   activeShows: number
   users: number | null
   bookingCounts: { holds: number; confirmed: number }
+  revenue: RevenueTotal[]
   upcoming: Screening[]
 }
 
