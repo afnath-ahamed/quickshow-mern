@@ -2,6 +2,7 @@ import assert from 'node:assert/strict'
 import { once } from 'node:events'
 import test from 'node:test'
 import { createApp } from '../src/app.js'
+import catalog from '../src/data/sampleCatalog.json' with { type: 'json' }
 
 async function startApi(t) {
   const saved = new Map()
@@ -14,6 +15,16 @@ async function startApi(t) {
       return { isAuthenticated: Boolean(userId), userId }
     },
     getUser: async () => ({ privateMetadata: {} }),
+    movies: {
+      listMovies: async () => catalog.movies,
+      listTrailers: () => catalog.trailers,
+      findMovie: async (id) => {
+        const movie = catalog.movies.find((item) => item.id === id)
+        return movie ? { ...movie, showtimes: [] } : null
+      },
+      movieExists: async (id) => catalog.movies.some((movie) => movie.id === id),
+      listSavedMovies: async (ids) => catalog.movies.filter(({ id }) => ids.includes(id)),
+    },
     favorites: {
       listFavorites: async (userId) => [...(saved.get(userId) ?? [])],
       saveFavorite: async (userId, movieId) => {
@@ -33,7 +44,7 @@ async function startApi(t) {
   return (path, options) => fetch(base + '/api' + path, options)
 }
 
-test('public catalog lists unique movies and serves future showtimes for a valid detail route', async (t) => {
+test('public catalog lists movies and resolves a valid detail route without scheduled shows', async (t) => {
   const request = await startApi(t)
   const response = await request('/movies')
   assert.equal(response.status, 200)
@@ -48,9 +59,7 @@ test('public catalog lists unique movies and serves future showtimes for a valid
   assert.equal(movie.title, movies[0].title)
   assert.equal(movie.originalLanguage, 'en')
   assert.ok(movie.cast.length)
-  assert.ok(movie.showtimes.length > 1)
-  assert.equal(new Set(movie.showtimes.map(({ id }) => id)).size, movie.showtimes.length)
-  assert.ok(movie.showtimes.every(({ startsAt }) => Date.parse(startsAt) > Date.now()))
+  assert.deepEqual(movie.showtimes, [])
   assert.equal((await request('/movies/unknown')).status, 404)
 })
 
@@ -71,7 +80,9 @@ test('favorite changes belong to the authenticated account', async (t) => {
     const response = await request('/favorites', { headers })
     assert.equal(response.status, 200)
     assert.equal(response.headers.get('cache-control'), 'no-store')
-    return (await response.json()).movieIds
+    const { movieIds, movies } = await response.json()
+    assert.deepEqual(movies.map((movie) => movie.id), movieIds)
+    return movieIds
   }
   assert.equal((await request('/favorites/unknown', { method: 'PUT', headers: alice })).status, 404)
   assert.equal((await request(moviePath + '?userId=bob', { method: 'PUT', headers: alice })).status, 204)

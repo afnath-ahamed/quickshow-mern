@@ -3,5 +3,7 @@ export function readEnvironment(env = process.env) {
     mongoUri: env.MONGODB_URI,
     port: env.PORT ?? '5000',
     frontendOrigin: env.FRONTEND_ORIGIN || 'http://localhost:5173',
+    tmdbReadToken: env.TMDB_READ_TOKEN?.trim(),
+    cinemaCurrency: env.CINEMA_CURRENCY?.trim().toUpperCase() || 'LKR',
   }
 }

@@ -10,7 +10,9 @@ import MyBookings from '../pages/MyBookings'
 import NotFound from '../pages/NotFound'
 import SignIn from '../pages/SignIn'
 import SignUp from '../pages/SignUp'
+import AddShow from '../pages/admin/AddShow'
 import Dashboard from '../pages/admin/Dashboard'
+import Shows from '../pages/admin/Shows'
 import AdminLayout from './layouts/AdminLayout'
 import StorefrontLayout from './layouts/StorefrontLayout'
 
@@ -32,11 +34,18 @@ export default function AppRoutes() {
         <Route element={<RequireAuth />}>
           <Route path="favorites" element={<Favorites />} />
           <Route path="my-bookings" element={<MyBookings />} />
-          <Route element={<RequireAdmin />}>
-            <Route path="admin" element={<AdminLayout><Dashboard /></AdminLayout>} />
-          </Route>
         </Route>
         <Route path="*" element={<NotFound />} />
+      </Route>
+      <Route path="admin" element={<RequireAuth />}>
+        <Route element={<RequireAdmin />}>
+          <Route element={<AdminLayout />}>
+            <Route index element={<Dashboard />} />
+            <Route path="add-show" element={<AddShow />} />
+            <Route path="shows" element={<Shows />} />
+            <Route path="*" element={<NotFound />} />
+          </Route>
+        </Route>
       </Route>
     </Routes>
   )

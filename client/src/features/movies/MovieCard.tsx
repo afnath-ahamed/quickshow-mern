@@ -7,7 +7,7 @@ export function MovieArtwork({ src, className = '' }: { src: string; className?:
   const [failedSrc, setFailedSrc] = useState<string>()
   return (
     <div className={'relative overflow-hidden bg-[#1b1b2a] ' + className}>
-      {failedSrc === src ? (
+      {!src || failedSrc === src ? (
         <span className="absolute inset-0 grid place-items-center text-slate-500"><Film size={40} aria-hidden="true" /></span>
       ) : (
         <img alt="" className="absolute size-full object-cover" loading="lazy" onError={() => setFailedSrc(src)} src={src} />
@@ -31,7 +31,7 @@ export default function MovieCard({ movie }: { movie: Movie }) {
           <div className="min-w-0 flex-1">
             <h3 className="leading-tight font-semibold text-white">{movie.title}</h3>
             <p className="mt-1.5 text-xs leading-relaxed text-slate-300 sm:text-sm">
-              {movie.releaseDate.slice(0, 4)} · {movie.genres[0]} · {formatRuntime(movie.runtime)}
+              {[movie.releaseDate.slice(0, 4), movie.genres[0], movie.runtime ? formatRuntime(movie.runtime) : null].filter(Boolean).join(' · ')}
             </p>
           </div>
           <ArrowUpRight size={17} className="mt-0.5 shrink-0 text-[#ff7790]" aria-hidden="true" />

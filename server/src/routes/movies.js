@@ -1,9 +1,10 @@
 import { Router } from 'express'
-import { getMovie, getMovies } from '../controllers/moviesController.js'
+import createMoviesController from '../controllers/moviesController.js'
 
-const router = Router()
-
-router.get('/', getMovies)
-router.get('/:movieId', getMovie)
-
-export default router
+export default function createMoviesRouter(movies) {
+  const router = Router()
+  const controller = createMoviesController(movies)
+  router.get('/', controller.list)
+  router.get('/:movieId', controller.details)
+  return router
+}
