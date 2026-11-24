@@ -5,9 +5,9 @@ export default function AccountMenu() {
   return (
     <>
       <Show when="signed-out">
-        <div className="flex items-center gap-4">
-          <Link to="/sign-in">Sign in</Link>
-          <Link to="/sign-up" className="rounded-md bg-slate-900 px-3 py-2 text-white">Sign up</Link>
+        <div className="flex items-center gap-3 text-sm sm:gap-4">
+          <Link to="/sign-in" className="whitespace-nowrap hover:text-[#ff7790]">Sign in</Link>
+          <Link to="/sign-up" className="catalog-button catalog-button-primary whitespace-nowrap">Sign up</Link>
         </div>
       </Show>
       <Show when="signed-in">

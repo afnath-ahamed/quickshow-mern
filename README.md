@@ -1,12 +1,13 @@
 # QuickShow MERN
 
-QuickShow is a movie ticket booking app in development. The current setup runs a React homepage, Clerk authentication, and an Express API with account and admin access checks. The project follows [GreatStack’s QuickShow tutorial](https://www.youtube.com/watch?v=Pez37wmUaQM).
+QuickShow is a movie ticket booking app in development. The current setup runs a React movie storefront, Clerk authentication, and an Express API with account and admin access checks. The project follows [GreatStack’s QuickShow tutorial](https://www.youtube.com/watch?v=Pez37wmUaQM).
 
 ## Current status
 
 - **The setup works locally.** Vite serves the QuickShow homepage, and the Express server connects to MongoDB through Mongoose and serves `GET /api/health`. GitHub Actions installs both apps, lints and builds the client, and runs the server test command.
 - **Clerk authentication.** The React app has sign-in and sign-up pages plus an account menu. Express verifies the Clerk session for account endpoints and checks the user's Clerk role for admin access.
-- **Later branches will implement the scaffolded features.** These include the movie catalog and favorites, show scheduling, seat booking, Stripe Checkout, and Inngest jobs for Clerk user sync, seat expiry, and email. The Vercel configuration files are in place for deployment.
+- **Movie catalog and favorites.** Browse the public storefront, view movie details and trailers, and preview a sample screening. Signed-in users can save and remove movies in their own MongoDB-backed favorites list.
+- **Upcoming features.** Live show scheduling, seat booking, Stripe Checkout, and Inngest jobs for Clerk user sync, seat expiry, and email. The Vercel configuration files are in place for deployment.
 
 ## Development plan
 
@@ -38,11 +39,11 @@ The server uses **Node.js, JavaScript, Express, Mongoose, and MongoDB**. One Exp
 | --- | --- |
 | [`server/src/index.js`](server/src/index.js) and [`app.js`](server/src/app.js) | Connect to MongoDB, start the server, and mount HTTP routes. |
 | [`server/src/config/`](server/src/config/) | Database connection and environment configuration. |
-| [`server/src/routes/`](server/src/routes/) | Map HTTP endpoints to handlers. The health route is public. Account and admin routes require Clerk. |
+| [`server/src/routes/`](server/src/routes/) | Map HTTP endpoints to handlers. Health and movie catalog routes are public. Account, favorites, and admin routes require Clerk. |
 | [`server/src/middleware/`](server/src/middleware/) | Authentication, admin authorization, and error handling. |
 | [`server/src/controllers/`](server/src/controllers/) | Read HTTP requests and format responses. |
 | [`server/src/services/`](server/src/services/) | Business rules and provider integrations, including TMDB and Stripe. |
-| [`server/src/models/`](server/src/models/) | Mongoose schemas for users, movies, shows, and bookings. |
+| [`server/src/models/`](server/src/models/) | Mongoose schemas for users, movies, shows, bookings, and favorites. |
 | [`server/src/jobs/`](server/src/jobs/) | Inngest entry points for Clerk sync, seat expiry, and notifications. |
 
 A typical feature request flows through a route and any applicable middleware to a controller. The controller calls a service, which uses Mongoose models when it needs to read or write MongoDB data.
@@ -97,7 +98,7 @@ npm.cmd run typecheck
 npm.cmd run build
 ```
 
-From `server/`, run the Node.js test runner. The auth tests exercise access checks using controlled Clerk responses. The seat reservation and Stripe webhook tests are still TODOs.
+From `server/`, run the Node.js test runner. The auth and catalog tests exercise access checks, movie details, future showtimes, and favorite ownership using controlled Clerk and storage responses. The seat reservation and Stripe webhook tests are still TODOs.
 
 ```powershell
 npm.cmd test
@@ -112,3 +113,12 @@ The [CI workflow](.github/workflows/ci.yml) runs on pull requests and pushes to 
 3. Visit `/my-bookings` while signed out. It should redirect to `/sign-in`. Sign in and confirm you can return to My Bookings.
 4. Check `GET /api/users/me` and `GET /api/admin/access`. Both return `401` without a signed-in session. With a valid session, the account endpoint returns the caller's ID and role. The admin endpoint returns `403` for a regular user and `200` for an admin.
 5. Visit `/admin` as each user. Confirm the regular user sees an access-denied message and the admin sees the dashboard scaffold.
+
+### Verify the movie catalog locally
+
+1. Open the homepage, select a trailer, and use **Explore movies** to browse the catalog.
+2. Open a movie, check its cast, and use **Buy tickets** to jump to the sample showtimes. Select a date and time. Seat booking arrives in a later step.
+3. Sign in, add that movie to Favorites, reload the Favorites page, then remove it. Sign in as a second user to confirm favorites belong to each account.
+4. Open a detail URL with an unknown ID and confirm it shows **Movie not found**.
+
+The catalog API reads the supplied fixtures from [`server/src/data/sampleCatalog.json`](server/src/data/sampleCatalog.json). It generates future sample showtimes displayed in the Colombo time zone. Catalog endpoints are `GET /api/movies` and `GET /api/movies/:movieId`. Favorites use `GET /api/favorites`, `PUT /api/favorites/:movieId`, and `DELETE /api/favorites/:movieId` with a Clerk session token. Live show data will replace the sample catalog in the admin scheduling step.

@@ -1,5 +1,6 @@
 import app from './app.js'
 import { connectDatabase } from './config/database.js'
+import Favorite from './models/Favorite.js'
 
 const { MONGODB_URI, PORT = '5000' } = process.env
 
@@ -9,8 +10,9 @@ if (!MONGODB_URI) {
 
 try {
   await connectDatabase(MONGODB_URI)
+  await Favorite.init()
 } catch {
-  console.error('Could not connect to MongoDB. Check MONGODB_URI and database availability.')
+  console.error('Could not initialize MongoDB. Check MONGODB_URI and database availability.')
   process.exit(1)
 }
 
