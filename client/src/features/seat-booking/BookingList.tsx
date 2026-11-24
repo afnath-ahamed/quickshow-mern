@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router'
 import { MovieArtwork } from '../movies/MovieCard'
+import { formatRuntime } from '../movies/moviesApi'
 import { formatMinorCurrency } from '../../shared/lib/formatCurrency'
 import { formatShowtime } from '../../shared/lib/formatShowtime'
 import type { Booking } from './bookingsApi'
@@ -32,7 +33,11 @@ export default function BookingList({ bookings, timeZone }: { bookings: Booking[
                 <h2 className="text-lg font-semibold"><Link to={'/movies/' + booking.movieId} className="hover:underline">{booking.title}</Link></h2>
                 <span className="rounded-full bg-white/10 px-2.5 py-1 text-xs font-semibold">{statusLabels[status]}</span>
               </div>
+              {booking.runtime != null && booking.runtime > 0 && (
+                <p className="mt-2 text-sm text-slate-300">Runtime {formatRuntime(booking.runtime)}</p>
+              )}
               <p className="mt-2 text-sm text-slate-300">{formatShowtime(new Date(booking.startsAt), timeZone, 'en')} · Colombo time</p>
+              <p className="mt-2 text-sm"><span className="text-slate-300">Tickets</span> {booking.seats.length}</p>
               <p className="mt-2 text-sm"><span className="text-slate-300">Seats</span> {booking.seats.join(', ')}</p>
               <p className="mt-2 font-semibold">{formatMinorCurrency(booking.totalMinor, booking.currency)}</p>
               {status === 'held' && <p className="mt-2 text-sm text-slate-300">Hold expires in <strong className="tabular-nums">{remaining}</strong></p>}

@@ -1,5 +1,6 @@
 import mongoose from 'mongoose'
 import Booking from '../models/Booking.js'
+import Movie from '../models/Movie.js'
 import SeatClaim from '../models/SeatClaim.js'
 import Show from '../models/Show.js'
 import { cinemaTimeZone } from './showService.js'
@@ -29,7 +30,7 @@ function assertShowId(showId) {
 async function findShow(showId, session) {
   assertShowId(showId)
   const show = await Show.findById(showId).session(session ?? null)
-    .populate('movie', 'tmdbId title posterUrl').lean()
+    .populate('movie', 'tmdbId title posterUrl runtime').lean()
   if (!show?.movie?.tmdbId) throw new BookingError('Screening not found.', 404, 'SHOW_NOT_FOUND')
   return show
 }
@@ -58,7 +59,7 @@ function serializeBooking(booking, now, includeCustomer = false) {
   const status = booking.status === 'held' && booking.expiresAt <= now ? 'expired' : booking.status
   return {
     id: String(booking._id), showId: String(booking.show),
-    movieId: booking.movieId, title: booking.title, posterUrl: booking.posterUrl,
+    movieId: booking.movieId, title: booking.title, posterUrl: booking.posterUrl, runtime: booking.runtime,
     startsAt: booking.startsAt, seats: booking.seats, totalMinor: booking.priceMinor * booking.seats.length,
     currency: booking.currency, status, expiresAt: booking.expiresAt,
     ...(includeCustomer && { customerName: booking.customerName, userId: booking.userId }),
@@ -99,6 +100,7 @@ export async function createBooking(user, input) {
       const [booking] = await Booking.create([{
         ...owner, customerName: user.displayName || 'Customer', show: show._id,
         movieId: show.movie.tmdbId, title: show.movie.title, posterUrl: show.movie.posterUrl,
+        runtime: show.movie.runtime > 0 ? show.movie.runtime : undefined,
         startsAt: show.startsAt, seats, priceMinor: show.priceMinor, currency: show.currency, status: 'held', expiresAt,
       }], { session })
 
@@ -132,8 +134,18 @@ export async function listBookings({ userId, page, showId }) {
     Booking.find(filter).sort({ createdAt: -1, _id: -1 }).skip((page - 1) * pageSize).limit(pageSize).lean(),
     Booking.countDocuments(filter),
   ])
+  const legacyMovieIds = userId
+    ? records.filter(({ runtime }) => runtime == null).map(({ movieId }) => movieId)
+    : []
+  const legacyMovies = legacyMovieIds.length
+    ? await Movie.find({ tmdbId: { $in: legacyMovieIds } }).select('tmdbId runtime -_id').lean()
+    : []
+  const legacyRuntimes = new Map(legacyMovies.map(({ tmdbId, runtime }) => [tmdbId, runtime]))
   const now = new Date()
-  return { bookings: records.map((booking) => serializeBooking(booking, now, !userId)), total, pageSize, timeZone: cinemaTimeZone }
+  const bookings = records.map((booking) => serializeBooking({
+    ...booking, runtime: booking.runtime ?? legacyRuntimes.get(booking.movieId),
+  }, now, !userId))
+  return { bookings, total, pageSize, timeZone: cinemaTimeZone }
 }
 
 export async function getBookingCounts(showIds) {

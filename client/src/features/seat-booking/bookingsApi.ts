@@ -11,6 +11,7 @@ export type SeatAvailability = {
 
 export type Booking = {
   id: string; showId: string; movieId: string; title: string; posterUrl: string; startsAt: string
+  runtime?: number
   seats: string[]; totalMinor: number; currency: string; status: 'held' | 'expired' | 'confirmed'; expiresAt: string
 }
 

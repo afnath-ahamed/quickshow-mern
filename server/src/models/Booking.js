@@ -8,6 +8,7 @@ const bookingSchema = new Schema({
   movieId: { type: String, required: true },
   title: { type: String, required: true },
   posterUrl: { type: String, default: '' },
+  runtime: { type: Number, min: 1, validate: Number.isSafeInteger },
   startsAt: { type: Date, required: true },
   seats: { type: [String], required: true },
   priceMinor: { type: Number, required: true, min: 1, validate: Number.isSafeInteger },

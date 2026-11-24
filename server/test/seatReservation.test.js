@@ -18,7 +18,7 @@ test('seat holds are atomic, idempotent, private, and expire', { timeout: 180_00
   })
   await mongoose.connect(mongo.getUri())
   await Promise.all([Movie.init(), Show.init(), Booking.init(), SeatClaim.init()])
-  const movie = await Movie.create({ tmdbId: '324544', title: 'Seat Booking Test' })
+  const movie = await Movie.create({ tmdbId: '324544', title: 'Seat Booking Test', runtime: 127 })
   const createShow = (milliseconds) => Show.create({
     movie: movie._id, startsAt: new Date(Date.now() + milliseconds), priceMinor: 125050, currency: 'LKR',
   })
@@ -81,6 +81,7 @@ test('seat holds are atomic, idempotent, private, and expire', { timeout: 180_00
     assert.equal(losingRequest.body.code, 'SEATS_UNAVAILABLE')
     const winningBooking = results[winner].body.booking
     assert.equal(winningBooking.totalMinor, 250100)
+    assert.equal(winningBooking.runtime, 127)
     const blocked = (await availability()).unavailable.sort()
     assert.deepEqual(blocked, winningBooking.seats)
     assert.equal(await Booking.countDocuments({ show: show._id }), 1)
@@ -134,5 +135,22 @@ test('seat holds are atomic, idempotent, private, and expire', { timeout: 180_00
     const soon = await createShow(90_000)
     const short = (await hold('bob', ['D2'], { showId: soon.id })).body.booking
     assert.equal(short.expiresAt, soon.startsAt.toISOString())
+  })
+
+  await t.test('booking history returns movie runtime for older reservations and preserves new snapshots', async () => {
+    const older = (await hold('charlie', ['E1'])).body.booking
+    const current = (await hold('charlie', ['E2', 'E3'])).body.booking
+    await Booking.findByIdAndUpdate(older.id, { $unset: { runtime: 1 } })
+    try {
+      await Movie.findByIdAndUpdate(movie.id, { runtime: 130 })
+      const { body } = await call('/bookings/me', 'charlie')
+      assert.equal(body.bookings.find(({ id }) => id === older.id).runtime, 130)
+      assert.equal(body.bookings.find(({ id }) => id === current.id).runtime, 127)
+      await Movie.findByIdAndUpdate(movie.id, { $unset: { runtime: 1 } })
+      const missing = await call('/bookings/me', 'charlie')
+      assert.equal(missing.body.bookings.find(({ id }) => id === older.id).runtime, undefined)
+    } finally {
+      await Movie.findByIdAndUpdate(movie.id, { runtime: 127 })
+    }
   })
 })
