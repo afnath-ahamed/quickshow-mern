@@ -1,3 +1,3 @@
 export function getCurrentUser(_request, response) {
-  return response.status(501).json({ message: 'This endpoint is pending implementation.' })
+  return response.json(response.locals.currentUser)
 }

@@ -1,6 +1,9 @@
 import { Router } from 'express'
+import { getAdminAccess } from '../controllers/adminController.js'
+import { requireAdmin } from '../middleware/requireAdmin.js'
 
-const router = Router()
-
-// TODO: Register the admin handlers in its feature branch.
-export default router
+export default function createAdminRouter(requireAuth) {
+  const router = Router()
+  router.get('/access', requireAuth, requireAdmin, getAdminAccess)
+  return router
+}

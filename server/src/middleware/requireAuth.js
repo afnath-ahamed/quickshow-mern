@@ -1,3 +1,23 @@
-export function requireAuth(_request, response) {
-  return response.status(501).json({ message: 'Access checks are pending implementation.' })
+export function createRequireAuth({ readAuth, getUser }) {
+  return async function requireAuth(request, response, next) {
+    response.set('Cache-Control', 'no-store')
+    const { isAuthenticated, userId } = readAuth(request)
+
+    if (!isAuthenticated || !userId) {
+      return response.status(401).json({ message: 'Sign in to continue.' })
+    }
+
+    let user
+    try {
+      user = await getUser(userId)
+    } catch {
+      return response.status(503).json({ message: 'Account access could not be verified.' })
+    }
+
+    response.locals.currentUser = {
+      userId,
+      role: user.privateMetadata?.role === 'admin' ? 'admin' : 'user',
+    }
+    next()
+  }
 }
