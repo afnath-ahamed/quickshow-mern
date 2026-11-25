@@ -1,4 +1,7 @@
+import { randomUUID } from 'node:crypto'
+import mongoose from 'mongoose'
 import Movie from '../models/Movie.js'
+import { queueJob } from '../models/NotificationJob.js'
 import Show from '../models/Show.js'
 
 export const cinemaTimeZone = 'Asia/Colombo'
@@ -59,17 +62,26 @@ export async function scheduleShows({ movieId, priceMinor, dates }, currency, fe
   }
 
   const createdAt = new Date()
-  try {
-    await Show.bulkWrite(dates.map((startsAt) => ({
-      updateOne: {
-        filter: { movie: movie._id, startsAt },
-        update: { $setOnInsert: { movie: movie._id, startsAt, priceMinor, currency, createdAt, updatedAt: createdAt } },
-        upsert: true,
-        timestamps: false,
-      },
-    })), { ordered: false })
-  } catch (error) {
-    if (!duplicateOnly(error)) throw error
+  const announcementBatch = randomUUID()
+  for (let attempt = 0; ; attempt++) {
+    try {
+      await mongoose.connection.transaction(async (session) => {
+        const result = await Show.bulkWrite(dates.map((startsAt) => ({
+          updateOne: {
+            filter: { movie: movie._id, startsAt },
+            update: { $setOnInsert: { movie: movie._id, startsAt, priceMinor, currency, createdAt, updatedAt: createdAt, announcementBatch } },
+            upsert: true,
+            timestamps: false,
+          },
+        })), { session })
+        if (result.upsertedCount) await queueJob({
+          id: 'announce:' + announcementBatch, kind: 'announce', reference: announcementBatch,
+        }, session)
+      })
+      break
+    } catch (error) {
+      if (attempt === 2 || !duplicateOnly(error)) throw error
+    }
   }
 
   // Report the persisted price for each slot, including any slot an earlier request created.

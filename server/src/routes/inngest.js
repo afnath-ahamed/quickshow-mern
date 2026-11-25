@@ -1,6 +1,11 @@
-import { Router } from 'express'
+import { json, Router } from 'express'
+import { serve } from 'inngest/express'
+import { createNotificationFunctions, inngest } from '../jobs/inngest.js'
 
-const router = Router()
-
-// TODO: Register the inngest handlers in its feature branch.
-export default router
+export default function createInngestRouter(dependencies) {
+  const router = Router()
+  router.all('/', json({ limit: '512kb' }), serve({
+    client: inngest, functions: createNotificationFunctions(inngest, dependencies),
+  }))
+  return router
+}

@@ -1,8 +1,10 @@
 import mongoose from 'mongoose'
 import Stripe from 'stripe'
 import Booking from '../models/Booking.js'
+import { queueJob } from '../models/NotificationJob.js'
 import Payment from '../models/Payment.js'
 import SeatClaim from '../models/SeatClaim.js'
+import { reminderLeadMs } from '../jobs/sendBookingConfirmation.js'
 
 export class PaymentError extends Error {
   constructor(message, status) {
@@ -82,6 +84,21 @@ export function createPaymentService({ secretKey, webhookSecret, frontendOrigin,
     } catch {
       // A completed session cannot be expired. Its verified event handles confirmation or refund.
     }
+  }
+
+  async function closeExpiredCheckout(booking) {
+    const payment = await Payment.findOne({ booking: booking._id }).lean()
+    if (!payment || refundStates.has(payment.state)) return true
+    if (payment.state === 'confirmed') return false
+    if (!payment.sessionId) return Date.now() - +payment.createdAt > 2 * 60_000
+    if (payment.sessionClosed) return true
+    if (!stripe) return false
+
+    await expireOpenSession(payment)
+    const checkout = await stripe.checkout.sessions.retrieve(payment.sessionId)
+      .catch(() => { throw new Error('Stripe Checkout status could not be verified.') })
+    if (checkout.status === 'complete') return booking.startsAt <= new Date()
+    return checkout.status === 'expired'
   }
 
   async function createCheckout(userId, bookingId) {
@@ -200,6 +217,11 @@ export function createPaymentService({ secretKey, webhookSecret, frontendOrigin,
           booking.status = 'confirmed'
           await booking.save({ session })
           payment.state = 'confirmed'
+          await queueJob({ id: 'confirmation:' + booking.id, kind: 'confirmation', reference: booking.id }, session)
+          await queueJob({
+            id: 'reminder:' + booking.id, kind: 'reminder', reference: booking.id,
+            dueAt: new Date(Math.max(Date.now(), +booking.startsAt - reminderLeadMs)),
+          }, session)
         }
       }
       if (payment.state !== 'confirmed') {
@@ -238,7 +260,7 @@ export function createPaymentService({ secretKey, webhookSecret, frontendOrigin,
     if (event.type === 'refund.updated' || event.type === 'refund.failed') await handleRefundEvent(event.data.object)
   }
 
-  return { createCheckout, getCheckoutStatus, handleWebhook }
+  return { createCheckout, getCheckoutStatus, handleWebhook, closeExpiredCheckout }
 }
 
 export async function getRevenue(showIds) {

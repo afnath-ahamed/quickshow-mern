@@ -1,11 +1,58 @@
 import { useAuth } from '@clerk/react'
 import { useCallback, useState } from 'react'
 import { Link, useLocation } from 'react-router'
+import { getEmailPreferences, saveEmailPreferences } from '../features/auth/authApi'
 import useMovieQuery from '../features/movies/useMovieQuery'
 import BookingList from '../features/seat-booking/BookingList'
 import { getBookings } from '../features/seat-booking/bookingsApi'
 import ErrorState from '../shared/ui/ErrorState'
 import LoadingState from '../shared/ui/LoadingState'
+
+function EmailPreferences() {
+  const { getToken } = useAuth()
+  const [saving, setSaving] = useState(false)
+  const [selected, setSelected] = useState<boolean | null>(null)
+  const [error, setError] = useState('')
+  const load = useCallback(async (signal: AbortSignal) => {
+    const token = await getToken()
+    if (!token) throw new Error('Sign in to load email preferences.')
+    return getEmailPreferences(token, signal)
+  }, [getToken])
+  const { result, retry } = useMovieQuery(load)
+
+  async function toggle(enabled: boolean) {
+    const previous = selected
+    setSelected(enabled)
+    setSaving(true)
+    setError('')
+    try {
+      const token = await getToken()
+      if (!token) throw new Error('Sign in to save email preferences.')
+      await saveEmailPreferences(token, enabled)
+    } catch {
+      setSelected(previous)
+      setError('Could not save email preferences. Try again.')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  return (
+    <section className="mt-10 border-t border-white/15 pt-5" aria-labelledby="email-preferences">
+      <h2 id="email-preferences" className="mb-3 font-semibold">Email preferences</h2>
+      {result.status === 'loading' && <p role="status">Loading email preferences…</p>}
+      {result.status === 'error' && <ErrorState message={result.message} retry={retry} />}
+      {result.status === 'success' && (
+        <label className="inline-flex items-center gap-2 text-sm">
+          <input type="checkbox" checked={selected ?? result.data.showAnnouncements} disabled={saving}
+            onChange={(event) => void toggle(event.currentTarget.checked)} />
+          Email me about new screenings
+        </label>
+      )}
+      {error && <p className="mt-2 text-red-300" role="alert">{error}</p>}
+    </section>
+  )
+}
 
 function MyReservations() {
   const { getToken } = useAuth()
@@ -35,6 +82,7 @@ function MyReservations() {
           )}
         </>
       )}
+      <EmailPreferences />
     </main>
   )
 }

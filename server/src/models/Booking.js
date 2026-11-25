@@ -22,6 +22,7 @@ bookingSchema.index({ userId: 1, requestId: 1 }, {
 })
 bookingSchema.index({ userId: 1, createdAt: -1, _id: -1 })
 bookingSchema.index({ show: 1, status: 1, expiresAt: 1 })
+bookingSchema.index({ status: 1, expiresAt: 1 })
 bookingSchema.index({ createdAt: -1, _id: -1 })
 
 export default model('Booking', bookingSchema)

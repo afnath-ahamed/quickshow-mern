@@ -6,8 +6,10 @@ import mongoose from 'mongoose'
 import { MongoMemoryReplSet } from 'mongodb-memory-server'
 import Stripe from 'stripe'
 import { createApp } from '../src/app.js'
+import { releaseExpiredSeats } from '../src/jobs/releaseExpiredSeats.js'
 import Booking from '../src/models/Booking.js'
 import Movie from '../src/models/Movie.js'
+import NotificationJob from '../src/models/NotificationJob.js'
 import Payment from '../src/models/Payment.js'
 import SeatClaim from '../src/models/SeatClaim.js'
 import Show from '../src/models/Show.js'
@@ -73,8 +75,9 @@ test('Stripe Checkout uses signed events, atomic fulfillment, and recoverable re
       return refund
     } },
   }
+  const payments = createPaymentService({ stripe, webhookSecret, frontendOrigin })
   const app = createApp({
-    payments: createPaymentService({ stripe, webhookSecret, frontendOrigin }),
+    payments,
     countUsers: async () => 3,
     authenticate: (_request, _response, next) => next(),
     readAuth: (request) => {
@@ -162,6 +165,9 @@ test('Stripe Checkout uses signed events, atomic fulfillment, and recoverable re
     assert.equal((await send({ ...event, id: 'evt_out_of_order' })).status, 200)
     assert.equal((await status(booking.id)).body.status, 'confirmed')
     assert.equal((await SeatClaim.findOne({ booking: booking.id })).status, 'confirmed')
+    const jobs = await NotificationJob.find({ reference: booking.id, kind: { $in: ['confirmation', 'reminder'] } }).lean()
+    assert.deepEqual(jobs.map(({ kind }) => kind).sort(), ['confirmation', 'reminder'])
+    assert.ok(jobs.find(({ kind }) => kind === 'reminder').dueAt < show.startsAt)
     const dashboard = await call('/admin/dashboard', { user: 'admin' })
     assert.deepEqual(dashboard.body.revenue, [{ currency: 'LKR', amountMinor: show.priceMinor }])
     assert.deepEqual(dashboard.body.upcoming[0].revenue, dashboard.body.revenue)
@@ -182,6 +188,8 @@ test('Stripe Checkout uses signed events, atomic fulfillment, and recoverable re
     await start(booking.id)
     const expiry = await expire(booking.id)
     const event = await complete(booking.id, {}, Math.floor(expiry.getTime() / 1000) - 1)
+    assert.ok(await releaseExpiredSeats(booking.id, payments.closeExpiredCheckout) > new Date())
+    assert.equal((await SeatClaim.findOne({ booking: booking.id })).status, 'held')
     assert.equal((await send(event)).status, 200)
     assert.equal((await status(booking.id)).body.status, 'confirmed')
   })

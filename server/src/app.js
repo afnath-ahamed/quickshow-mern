@@ -11,10 +11,12 @@ import createStripeWebhookRouter from './routes/stripeWebhook.js'
 import { seatAvailability } from './controllers/bookingsController.js'
 import createFavoritesRouter from './routes/favorites.js'
 import healthRouter from './routes/health.js'
+import createInngestRouter from './routes/inngest.js'
 import createMoviesRouter from './routes/movies.js'
-import createUsersRouter from './routes/users.js'
+import createUsersRouter, { createClerkWebhookRouter } from './routes/users.js'
 import { getDashboard, listShowsWithBookingCounts } from './services/adminService.js'
 import * as favoriteService from './services/favoriteService.js'
+import { createEmailSender } from './services/emailService.js'
 import * as movieService from './services/movieService.js'
 import { scheduleShows } from './services/showService.js'
 import { createPaymentService } from './services/paymentService.js'
@@ -30,6 +32,9 @@ export function createApp({
   movies = movieService,
   tmdb = createTmdbService({ token: readEnvironment().tmdbReadToken }),
   cinemaCurrency = readEnvironment().cinemaCurrency,
+  inngestEnabled = readEnvironment().inngestEnabled,
+  clerkWebhookSecret = readEnvironment().clerkWebhookSecret,
+  sender = createEmailSender(),
   payments = createPaymentService({
     frontendOrigin,
     secretKey: readEnvironment().stripeSecretKey,
@@ -44,6 +49,11 @@ export function createApp({
 
   app.use(cors({ origin: frontendOrigin }))
   app.use('/api/stripe/webhook', createStripeWebhookRouter(payments))
+  if (clerkWebhookSecret) app.use('/api/webhooks/clerk', createClerkWebhookRouter(clerkWebhookSecret))
+  if (inngestEnabled) app.use('/api/inngest', createInngestRouter({
+    getUser, listUsers: (options) => clerkClient.users.getUserList(options), sender, frontendOrigin,
+    closeExpiredCheckout: payments.closeExpiredCheckout,
+  }))
   app.use('/api', healthRouter)
   app.use('/api/movies', createMoviesRouter(movies))
   app.get('/api/shows/:showId/seats', seatAvailability)
