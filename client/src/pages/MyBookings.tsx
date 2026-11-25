@@ -11,6 +11,7 @@ import LoadingState from '../shared/ui/LoadingState'
 function EmailPreferences() {
   const { getToken } = useAuth()
   const [saving, setSaving] = useState(false)
+  const [selected, setSelected] = useState<boolean | null>(null)
   const [error, setError] = useState('')
   const load = useCallback(async (signal: AbortSignal) => {
     const token = await getToken()
@@ -20,14 +21,16 @@ function EmailPreferences() {
   const { result, retry } = useMovieQuery(load)
 
   async function toggle(enabled: boolean) {
+    const previous = selected
+    setSelected(enabled)
     setSaving(true)
     setError('')
     try {
       const token = await getToken()
       if (!token) throw new Error('Sign in to save email preferences.')
       await saveEmailPreferences(token, enabled)
-      retry()
     } catch {
+      setSelected(previous)
       setError('Could not save email preferences. Try again.')
     } finally {
       setSaving(false)
@@ -41,7 +44,7 @@ function EmailPreferences() {
       {result.status === 'error' && <ErrorState message={result.message} retry={retry} />}
       {result.status === 'success' && (
         <label className="inline-flex items-center gap-2 text-sm">
-          <input type="checkbox" checked={result.data.showAnnouncements} disabled={saving}
+          <input type="checkbox" checked={selected ?? result.data.showAnnouncements} disabled={saving}
             onChange={(event) => void toggle(event.currentTarget.checked)} />
           Email me about new screenings
         </label>
