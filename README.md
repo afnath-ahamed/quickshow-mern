@@ -10,7 +10,7 @@ QuickShow is a movie ticket booking app in development. The current setup runs a
 - **Admin scheduling.** Admins can browse TMDB Now Playing, schedule priced screenings, and review their schedule. Upcoming screenings power the public catalog.
 - **Seat booking.** Signed-in customers can reserve up to five seats for a screening, review active and expired holds in My Bookings, and see availability before reserving. Admins can review reservations by screening.
 - **Stripe Checkout.** In a sandbox, customers can pay for an active hold. Signed Stripe events confirm seats and update verified revenue. Late or unfulfillable payments follow the refund path.
-- **Upcoming features.** Inngest jobs for Clerk user sync, seat expiry, and email. The Vercel configuration files are in place for deployment.
+- **Booking notifications.** Inngest processes Clerk account updates, cleans up expired holds, and delivers confirmations, reminders, and opt-in screening announcements. Production deployment is the next step.
 
 ## Development plan
 
@@ -45,7 +45,7 @@ The server uses **Node.js, JavaScript, Express, Mongoose, and MongoDB**. One Exp
 | [`server/src/routes/`](server/src/routes/) | Map HTTP endpoints to handlers. Health and movie catalog routes are public. Account, favorites, and admin routes require Clerk. |
 | [`server/src/middleware/`](server/src/middleware/) | Authentication, admin authorization, and error handling. |
 | [`server/src/controllers/`](server/src/controllers/) | Read HTTP requests and format responses. |
-| [`server/src/services/`](server/src/services/) | Business rules and provider integrations, including TMDB and Stripe. |
+| [`server/src/services/`](server/src/services/) | Business rules and provider integrations, including TMDB, Stripe, and SMTP. |
 | [`server/src/models/`](server/src/models/) | Mongoose schemas for users, movies, shows, bookings, and favorites. |
 | [`server/src/jobs/`](server/src/jobs/) | Inngest entry points for Clerk sync, seat expiry, and notifications. |
 
@@ -159,6 +159,22 @@ The seat API is `GET /api/shows/:showId/seats`. Creating a hold and viewing pers
 
 3. Reserve seats, open **My Bookings**, and choose **Pay Now**. Complete the hosted checkout with a [Stripe test card](https://docs.stripe.com/testing#cards). Confirm that the result page and My Bookings show the confirmed reservation. Check the admin dashboard and List Shows for the verified amount.
 4. For a separate reservation, cancel or use a decline test card. Retry within the original hold and confirm the same Checkout Session is reused. No checkout link is issued once the hold expires.
-5. Verify the late-payment path with an expired hold. Stripe's hosted page can outlast the seat hold. QuickShow closes open sessions when expiry is detected and refunds paid sessions that cannot confirm seats. Inngest cleanup is a later step.
+5. Verify the late-payment path with an expired hold. QuickShow closes open sessions when expiry is detected and refunds paid sessions that cannot confirm seats. With Inngest enabled, the cleanup job also attempts to close the session. The automated webhook tests exercise a completed payment delivered after expiry.
 
 `POST /api/checkout/:bookingId` opens checkout and `GET /api/checkout/:bookingId` reports status for the owner. The raw `POST /api/stripe/webhook` route verifies Stripe signatures before processing events. Stripe keys and signing secrets stay out of Git.
+
+### Run and verify booking notifications locally
+
+1. Add `INNGEST_DEV=1` to `server/.env`, start the API, and point the Inngest CLI at it. This enables `/api/inngest`; the regular API can run with the worker disabled. Use an isolated or designated development database for job testing.
+
+   ```sh
+   inngest dev -u http://localhost:5000/api/inngest
+   ```
+
+2. For a real Clerk webhook, register `user.created`, `user.updated`, and `user.deleted` on the Clerk development instance. Point it at `/api/webhooks/clerk` on a reachable development endpoint and save `CLERK_WEBHOOK_SIGNING_SECRET` locally. For existing users, send the `quickshow/clerk.backfill` event with `{}` as its data in the Inngest Dev Server. Clerk remains the source of user identity and verified email addresses.
+3. For a real email test, verify a Brevo sender and set `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `EMAIL_FROM`, and `EMAIL_TEST_RECIPIENT`. In development, all real mail goes to that test recipient. The integration tests use a local capture transport.
+4. Complete a Stripe Sandbox booking and check for one confirmation. Reminders are due eight hours before each screening. A booking paid within that window is due for a reminder on the next dispatch while the screening is upcoming.
+5. In **My Bookings → Email preferences**, enable **Email me about new screenings** for your test account. Add a batch of showtimes through the admin dashboard and check that the test inbox receives one announcement. Repeat the same schedule submission to check deduplication.
+6. Reserve a seat and let the hold expire. Verify that it can be reserved again and the original booking appears as Expired. Cleanup preserves the payment state while Stripe has a completed session awaiting its webhook.
+
+Notification jobs are queued in MongoDB and dispatched by Inngest each minute. SMTP failures with a definite temporary rejection can be retried. If delivery is uncertain, check the provider logs before requeuing the job. For a deployed environment, configure the Inngest event and signing keys and register the cloud endpoints with `INNGEST_DEV=0`.

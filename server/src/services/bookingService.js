@@ -1,6 +1,7 @@
 import mongoose from 'mongoose'
 import Booking from '../models/Booking.js'
 import Movie from '../models/Movie.js'
+import { queueJob } from '../models/NotificationJob.js'
 import SeatClaim from '../models/SeatClaim.js'
 import Show from '../models/Show.js'
 import { cinemaTimeZone } from './showService.js'
@@ -113,6 +114,7 @@ export async function createBooking(user, input) {
           { upsert: true, session },
         )
       }
+      await queueJob({ id: 'release:' + booking.id, kind: 'release', reference: booking.id, dueAt: expiresAt }, session)
       return { booking: serializeBooking(booking, now), created: true }
     })
   } catch (error) {
