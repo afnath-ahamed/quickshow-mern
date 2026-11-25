@@ -48,7 +48,7 @@ export function createNotificationFunctions(client, deps) {
       { limit: 8 },
       { limit: 1, key: 'event.data.scope' },
     ],
-  }, ({ event, step }) => step.run('process-queued-job', () => runNotificationJob(kind, event.data.id, deps))))
+  }, ({ event, step }) => step.run('process-queued-job', () => runNotificationJob(kind, event.data?.id, deps))))
 
   const dispatch = client.createFunction({
     id: 'dispatch-notifications',

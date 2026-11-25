@@ -1,5 +1,5 @@
 import mongoose from 'mongoose'
-import { queueJob } from '../models/NotificationJob.js'
+import { syncClerkUsers } from '../jobs/syncClerkUsers.js'
 import User from '../models/User.js'
 
 export function getCurrentUser(_request, response) {
@@ -18,10 +18,8 @@ export async function updateEmailPreferences(request, response) {
   }
   const clerkId = response.locals.currentUser.userId
   await mongoose.connection.transaction(async (session) => {
+    if (showAnnouncements) await syncClerkUsers(clerkId, () => response.locals.clerkUser, session)
     await User.updateOne({ clerkId }, { showAnnouncements }, { upsert: true, session })
-    if (showAnnouncements) await queueJob({
-      id: 'clerk-preferences:' + new mongoose.Types.ObjectId(), kind: 'clerk', reference: clerkId,
-    }, session)
   })
   return response.json({ showAnnouncements })
 }

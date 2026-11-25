@@ -16,7 +16,7 @@ export async function loadBookingEmail(job, { getUser }) {
   const booking = await Booking.findOne({ _id: job.reference, status: 'confirmed' }).lean()
   if (!booking) return null
   let user = await User.findOne({ clerkId: booking.userId }).lean()
-  if (!user) {
+  if (!user || (!user.email && !user.deleted)) {
     await syncClerkUsers(booking.userId, getUser)
     user = await User.findOne({ clerkId: booking.userId }).lean()
   }

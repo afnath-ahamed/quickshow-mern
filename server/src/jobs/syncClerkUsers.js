@@ -1,6 +1,6 @@
 import User from '../models/User.js'
 
-export async function syncClerkUsers(clerkId, getUser) {
+export async function syncClerkUsers(clerkId, getUser, session) {
   let account
   try {
     account = await getUser(clerkId)
@@ -12,7 +12,7 @@ export async function syncClerkUsers(clerkId, getUser) {
     await User.updateOne({ clerkId }, {
       $set: { deleted: true, showAnnouncements: false },
       $unset: { displayName: 1, email: 1 },
-    }, { upsert: true })
+    }, { upsert: true, session })
     return
   }
 
@@ -21,5 +21,5 @@ export async function syncClerkUsers(clerkId, getUser) {
   const update = primary?.verification?.status === 'verified'
     ? { $set: { ...fields, email: primary.emailAddress } }
     : { $set: fields, $unset: { email: 1 } }
-  await User.updateOne({ clerkId }, update, { upsert: true })
+  await User.updateOne({ clerkId }, update, { upsert: true, session })
 }

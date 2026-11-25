@@ -19,6 +19,7 @@ export function createRequireAuth({ readAuth, getUser }) {
       displayName: [user.firstName, user.lastName].filter(Boolean).join(' ') || user.username,
       role: user.privateMetadata?.role === 'admin' ? 'admin' : 'user',
     }
+    response.locals.clerkUser = user
     next()
   }
 }
