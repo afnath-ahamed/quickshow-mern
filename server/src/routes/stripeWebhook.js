@@ -1,6 +1,8 @@
-import { Router } from 'express'
+import { raw, Router } from 'express'
+import createStripeWebhookController from '../controllers/stripeWebhookController.js'
 
-const router = Router()
-
-// TODO: Register the stripeWebhook handlers in its feature branch.
-export default router
+export default function createStripeWebhookRouter(payments) {
+  const router = Router()
+  router.post('/', raw({ type: 'application/json' }), createStripeWebhookController(payments))
+  return router
+}

@@ -1,6 +1,6 @@
 import { request } from '../../shared/api/httpClient'
 
-type GetToken = () => Promise<string | null>
+export type GetToken = () => Promise<string | null>
 export type SeatAvailability = {
   show: { id: string; movieId: string; title: string; posterUrl: string; startsAt: string; priceMinor: number; currency: string }
   rows: { label: string; seats: string[] }[]
@@ -27,7 +27,7 @@ export class BookingApiError extends Error {
   }
 }
 
-async function bookingRequest<T>(path: string, options: RequestInit, getToken?: GetToken): Promise<T> {
+export async function bookingRequest<T>(path: string, options: RequestInit, getToken?: GetToken): Promise<T> {
   const headers = new Headers(options.headers)
   if (getToken) {
     const token = await getToken()

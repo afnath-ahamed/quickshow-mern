@@ -1,21 +1,42 @@
+import { useAuth } from '@clerk/react'
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router'
+import { Link, useNavigate } from 'react-router'
 import { MovieArtwork } from '../movies/MovieCard'
 import { formatRuntime } from '../movies/moviesApi'
 import { formatMinorCurrency } from '../../shared/lib/formatCurrency'
 import { formatShowtime } from '../../shared/lib/formatShowtime'
 import type { Booking } from './bookingsApi'
+import { startCheckout } from './checkoutApi'
 
 const statusLabels = { held: 'Active hold', confirmed: 'Confirmed', expired: 'Expired' }
 
 export default function BookingList({ bookings, timeZone }: { bookings: Booking[]; timeZone: string }) {
+  const { getToken } = useAuth()
+  const navigate = useNavigate()
   const [now, setNow] = useState(Date.now)
+  const [paying, setPaying] = useState<string>()
+  const [paymentError, setPaymentError] = useState<{ id: string; message: string }>()
   const hasHolds = bookings.some(({ status, expiresAt }) => status === 'held' && Date.parse(expiresAt) > now)
   useEffect(() => {
     if (!hasHolds) return
     const timer = window.setInterval(() => setNow(Date.now()), 1000)
     return () => window.clearInterval(timer)
   }, [hasHolds])
+
+  async function pay(bookingId: string) {
+    if (paying) return
+    setPaying(bookingId)
+    setPaymentError(undefined)
+    try {
+      const checkout = await startCheckout(getToken, bookingId)
+      if (checkout.status === 'open') window.location.assign(checkout.url)
+      else void navigate('/checkout/result?bookingId=' + encodeURIComponent(bookingId))
+    } catch (failure) {
+      setPaymentError({ id: bookingId, message: failure instanceof Error ? failure.message : 'Could not start checkout.' })
+    } finally {
+      setPaying(undefined)
+    }
+  }
 
   if (!bookings.length) return <p className="text-slate-300">You have no reservations yet.</p>
 
@@ -40,7 +61,19 @@ export default function BookingList({ bookings, timeZone }: { bookings: Booking[
               <p className="mt-2 text-sm"><span className="text-slate-300">Tickets</span> {booking.seats.length}</p>
               <p className="mt-2 text-sm"><span className="text-slate-300">Seats</span> {booking.seats.join(', ')}</p>
               <p className="mt-2 font-semibold">{formatMinorCurrency(booking.totalMinor, booking.currency)}</p>
-              {status === 'held' && <p className="mt-2 text-sm text-slate-300">Hold expires in <strong className="tabular-nums">{remaining}</strong></p>}
+              {status === 'held' && (
+                <>
+                  <p className="mt-2 text-sm text-slate-300">Hold expires in <strong className="tabular-nums">{remaining}</strong></p>
+                  <button className="catalog-button catalog-button-primary mt-3" type="button"
+                    disabled={Boolean(paying)} onClick={() => void pay(booking.id)}>
+                    {paying === booking.id ? 'Opening checkout…' : 'Pay Now'}
+                  </button>
+                </>
+              )}
+              {paymentError?.id === booking.id && <p className="mt-2 text-sm text-rose-300" role="alert">{paymentError.message}</p>}
+              {status === 'expired' && (
+                <Link className="catalog-text-link mt-2" to={'/checkout/result?bookingId=' + encodeURIComponent(booking.id)}>Check payment status</Link>
+              )}
             </div>
           </li>
         )

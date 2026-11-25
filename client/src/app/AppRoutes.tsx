@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { Outlet, Route, Routes, useLocation } from 'react-router'
 import RequireAdmin from '../features/auth/RequireAdmin'
 import RequireAuth from '../features/auth/RequireAuth'
+import CheckoutResult from '../pages/CheckoutResult'
 import Favorites from '../pages/Favorites'
 import Home from '../pages/Home'
 import MovieDetails from '../pages/MovieDetails'
@@ -36,6 +37,7 @@ export default function AppRoutes() {
         <Route element={<RequireAuth />}>
           <Route path="favorites" element={<Favorites />} />
           <Route path="my-bookings" element={<MyBookings />} />
+          <Route path="checkout/result" element={<CheckoutResult />} />
           <Route path="shows/:showId/seats" element={<SeatSelection />} />
         </Route>
         <Route path="*" element={<NotFound />} />
