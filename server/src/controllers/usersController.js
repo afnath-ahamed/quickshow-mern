@@ -19,7 +19,8 @@ export async function updateEmailPreferences(request, response) {
   const clerkId = response.locals.currentUser.userId
   await mongoose.connection.transaction(async (session) => {
     if (showAnnouncements) await syncClerkUsers(clerkId, () => response.locals.clerkUser, session)
-    await User.updateOne({ clerkId }, { showAnnouncements }, { upsert: true, session })
+    const preferences = showAnnouncements ? { showAnnouncements: true } : { showAnnouncements: false }
+    await User.updateOne({ clerkId }, { $set: preferences }, { upsert: true, session })
   })
   return response.json({ showAnnouncements })
 }
